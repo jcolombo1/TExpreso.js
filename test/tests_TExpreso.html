@@ -1,0 +1,333 @@
+ <!DOCTYPE html>
+<html>
+ <head>
+<title>TEST TExpreso Template Engine</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="etc/qunit.css">
+    </head>
+    <body>
+	
+		<div id="qunit"></div>
+		<div id="qunit-fixture"></div>
+		<br>
+		<h3>Vista:</h3>
+		<div id="view"></div> 
+		<div id="lapso"></div> 
+
+	<script src="etc/jquery-1.9.1.min.js"></script>
+	<script src="etc/qunit.js"> </script>
+	<script src="../TExpreso.js"></script>
+	<script src="../jquery.TExpreso.js"></script>
+
+ 
+<script type="text/javascript">
+
+	var view = document.getElementById("view");
+	var lapso = document.getElementById("lapso");
+	var clk;
+	
+	var ET = window.TExpreso;
+
+	// TEST DE TExpreso.js
+
+	test( "Test: "+ET.ME, function() {
+	
+		ET.reset();
+		ET.overwrite = true;
+		
+		var scr, helper;
+		clk = new Date();
+		
+	
+		scr = 'aaa{{#t}}N2{{else}}N2i{{end}}A{{#f}}N1a{{#t}}N2{{else}}N2i{{end}}N1z{{else}}S1a{{#t}}S2{{else}}S2i{{end}}S1z{{end}}Z{{#t}}N2{{else}}N2i{{end}}bbb';
+		ET.add('t1', scr);
+		deepEqual( logScript( ET.get('t1', {test:true} )), scr, 'add / get');
+		equal( ET.error, '', 'not ERROR' );
+		
+		var big = scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr + scr;
+		big = big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big + big ;
+		ET.add('t2', scr);
+		deepEqual( logScript( ET.get('t2', {test:true} )), scr, 'big template!! add / get - '+big.length+' bytes' );
+		equal( ET.error, '', 'not ERROR' );
+
+		deepEqual( logScript( ET.get('t1', {test:true} )), scr, 'get del previo'); // aun está t1?
+
+
+		scr = 'aaa{{b }}ccc';		///////// t2 /////////
+		ET.add('t2', scr);
+		
+		equal( ET.render('t2', {b:'-'}), 'aaa-ccc', 'rend min' );
+		equal( ET.error, '', 'not ERROR' );
+
+		scr = 'aaa{{b }}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {b:'-'}), 'aaa-', 'rend min-' );
+	
+		scr = '000{{ > t2 }}111'; 
+		ET.add('t1', scr);
+		equal( ET.render('t1', {b:'#'}), '000aaa#ccc111', 'rend c/ partial' );
+
+		scr = '000{{#t}}{{ > t2 }}{{end}}111';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {t: false, b:'#'}), '000111', 'rend block s/false & partial' );
+
+		scr = '000{{#t}}{{ > t2 }}{{else}}ZZZ{{end}}111';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {t: false, b:'#'}), '000ZZZ111', 'rend block s/false c/else & partial' );
+
+		scr = '000{{#t}}{{ > t2 }}{{end}}111';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {t: true, b:'#'}), '000aaa#ccc111', 'rend block s/ true & partial' );
+
+		scr = '000{{#list}}{{ > t2 }}{{end}}111';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {list: [{b:'A'},{b:'B'},{b:'C'}]}), '000aaaAcccaaaBcccaaaCccc111', 'rend block s/ list scope & partial' );
+
+		scr = '000{{#object}}{{ > t2 }}{{end}}111';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {object: {b:'UPA!'}}), '000aaaUPA!ccc111', 'rend block s/ object scope & partial' );
+
+		// errores estructurales
+		
+		scr = '000{{#t}}{{ > t2 }}{{end}}111{{end}}xxx';
+		ET.add('t1', scr);
+		equal( ET.error, '[ t1 ] invalid spare "end"', 'add ERROR: sobra end' );
+		equal( ET.render('t1', {t:true}), '000111', 'ERROR: sobra end' );
+
+		scr = '000{{#t}}{{ > t2 }}{{end}}111{{else}}';
+		ET.add('t1', scr);
+		equal( ET.error, '[ t1 ] invalid spare "else" for: ??', 'add ERROR: sobra else' );
+		equal( ET.render('t1', {t:true}), '000111', 'ERROR: sobra else' );
+
+		// ---- Helper no-block
+		
+		helper = function(p) { return p[0]+p[1]+p[2]; };
+		ET.addHelper('h1', helper);
+		
+		scr = "000{{h1 a 'alfa==' c }}111";
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), '000alfa==111', 'helper no-block & ==' );
+
+		scr = '000{{ h1 a \'al\'fa\' " be\'ta " }}111';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {a:"\"Griegas\": "}), '000"Griegas": al\'fa be\'ta 111', 'helper no-block 2' );
+
+		// ---- Helper block
+		
+		helper = function(pars, opts) {
+			var v = pars[0], x;
+			for (var i in v) {
+				if (!x || v[i].e < x.e) x = v[i];
+			};
+			return x ? opts.T(x) : opts.E ? opts.E() : ''; 
+		};
+		ET.addHelper('menor', helper);
+
+		scr = 'El menor es {{#menor rows}}{{name}}{{end}} !';
+		ET.add('t1', scr);
+		deepEqual( logScript( ET.get('t1', {test:true} )), scr, 'add / get c/helper');
+		equal( ET.render('t1', {rows: [{name:'Guiye', e:53},{name:'Lucas', e:24},{name:'Patry', e:51}]}), 'El menor es Lucas !', 'helper block' );
+
+		// -- .has() --
+
+		equal( ET.has('no-existe'), false, 'has - false');
+		equal( ET.has('t1'), true, 'has - default');
+		equal( ET.has('t2', 'template'), true, 'has - template');
+		equal( ET.has('menor', 'helper') && ET.has('h1', 'helper'), true, 'has - helpers');
+
+		// -- .names() --
+		
+		deepEqual( ET.names(), ["t1","t2"], 'names - default');
+		deepEqual( ET.names('helper'), ["set", "if", "h1", "menor"], 'names - helpers');
+
+		// -- set helper --
+		
+		scr = '{{ set $a.b }}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), '', 'ERROR: set' );
+		equal( ET.error, '[ t1 ] invalid var in "set": "$a.b"', 'ERROR: set' );
+		
+		scr = '{{ set ab }}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), '', 'ERROR: set 2' );
+		equal( ET.error, '[ t1 ] invalid var in "set": "ab"', 'ERROR: set, comenzar c/ $' );
+	
+		scr = '{{ set $a }}{{ set $b="x" "y"}}{{ set $c = ccc }}{{ set $d "hola"}}{{ set $e "buen" " dia"}}{{$a}}{{$b}}{{$c}}{{$d}}{{$e}}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {ccc: 123}), 'xy123holabuen dia', 'set' );
+
+		scr = '{{ set $1 2 }}{{set   $a " HOLA"}}{{set $b = "HO  LA"}}{{set $c = "HOLA"}}{{set $d      = "HO=LA"}}{{set  $e   =    "HOLA "}}->{{$1}}{{$a}}{{$b}}{{$c}}{{$d}}{{$e}}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), '->2 HOLAHO  LAHOLAHO=LAHOLA ', 'set helper 1' );
+		
+		scr = '{{set $a = b}}{{$a}}{{set $c= 123.45 }}{{$c}}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), '123.45', 'set helper 2' );
+	
+		scr = '{{set $f false}}{{set $t true}}{{set $n null}}{{set $u undefined}}{{$f}}|{{$t}}|{{$n}}|{{$u}}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), '|true||', 'set helper 3' );
+
+		scr = '{{#set $x}} XX X  {{end}}{{$x}}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), ' XX X  ', 'set helper 4' );
+
+		scr = '{{#set $x}} Y XX X  {{end}}{{$x}}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), ' Y XX X  ', 'set helper 5' );
+		
+		scr = '{{#t}}{{t}}:{{#a}}{{b}}{{t}}{{end}}{{end}}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', { t: true, a: {b:'hola!'} } ), 'true:hola!true', 'child & parent scope' );
+		
+		scr = '{{#t}}{{t}}:{{#a}}{{b}}{{a.b}}{{t}}{{end }}{{end}}';
+		equal( ET.express(scr, { t: true, a: {b:'hola!'} } ), 'true:hola!hola!true', 'child & parent scope recursivo - w/express' );
+
+		scr = '{{^t}}{{^n}}Saludos: {{#a}}{{b}}{{a.b}}{{end}}{{ end }}{{end}}';
+		equal( ET.express(scr, { t: false, a: {b:'hola!'} } ), 'Saludos: hola!hola!', 'inverse block child & parent scope' );
+
+		scr = '[[#t]][[a.b]][[else]]NO[[end]]';
+		ET.delimiter('[');
+		equal( ET.express(scr, { t: true, a: {b:'Ok!'} } ), 'Ok!', 'delimiter' );
+		ET.delimiter();
+		
+		ET.add('tpl-2', document.getElementById("tpl-2").text);
+		ET.add('tpl-1', document.getElementById("tpl-1").text);
+		var html = ET.render('tpl-1', {lugar: 'Los Polvorines', rows: [{nombre:'Jorge', apellido: 'Colombo'}, {nombre:'Lucas', apellido: 'Colombo'}, {nombre:'Mauro', apellido: 'Colombo'} ]} );
+		view.innerHTML = html;
+		var text = view.textContent.replace(/[\n\t]+/g,'');
+		equal( text, 'Si...1) Jorge Colombo, vive en Los Polvorines 2) Lucas Colombo, vive en Los Polvorines 3) Mauro Colombo, vive en Los Polvorines Hay 3 personas en Los Polvorines (vive en) !Todo Ok...', 'multilinea tpl' );
+		
+		ET.express( 'tpl-1', 'view', {lugar: 'Los Polvorines', rows: [{nombre:'Jorge', apellido: 'Colombo'}, {nombre:'Lucas', apellido: 'Colombo'}, {nombre:'Mauro', apellido: 'Colombo'} ]} );
+		equal( view.textContent.replace(/[\n\t]+/g,''), 'Si...1) Jorge Colombo, vive en Los Polvorines 2) Lucas Colombo, vive en Los Polvorines 3) Mauro Colombo, vive en Los Polvorines Hay 3 personas en Los Polvorines (vive en) !Todo Ok...', 'multilinea tpl - w/express' );
+		
+		view.innerHTML = ET.express( "tpl-1", {lugar: 'Los Polvorines', rows: [{nombre:'Jorge', apellido: 'Colombo'}, {nombre:'Lucas', apellido: 'Colombo'}, {nombre:'Mauro', apellido: 'Colombo'} ]} );
+		equal( view.textContent.replace(/[\n\t]+/g,''), 'Si...1) Jorge Colombo, vive en Los Polvorines 2) Lucas Colombo, vive en Los Polvorines 3) Mauro Colombo, vive en Los Polvorines Hay 3 personas en Los Polvorines (vive en) !Todo Ok...', 'multilinea tpl 2 - w/express' );
+	
+	
+		$(lapso).append('<br>... 1 Tardó : '+ (new Date()-clk) +' ms.');
+	});
+
+	// TEST DE jquery plugin (jquery.TExpreso.js)
+	
+	asyncTest( "Test: "+$.TExpreso.ME, function() {
+		expect(8);
+
+		var scr, helper;
+		clk = new Date();
+
+		ET.reset();
+		ET.overwrite = true;
+		
+		equal($.TExpreso.getStatsInfo(),'jQuery TExpreso statistics -> templates: (no), helpers: 2 [set, if]', 'nada en getStatsInfo');
+		
+		var tpls=[], interceptor = function(n,c){ tpls.push(n); return c; };   // n = template name, c = contenido
+		
+		$.TExpreso.setAddInterceptor(interceptor);
+		$.TExpreso.addFromDom();
+		deepEqual(tpls,["tpl-1","tpl-2"],'ok setAddInterceptor');
+
+		$('#view').texpreso('tpl-1', { lugar: 'Los Polvorines', rows: [{nombre:'J', apellido: 'Colombo'}, {nombre:'L', apellido: 'Colombo'}, {nombre:'M', apellido: 'Colombo'} ]} );
+		equal(view.textContent.replace(/[\n\t]+/g,''),'Si...1) J. Colombo, vive en Los Polvorines 2) L. Colombo, vive en Los Polvorines 3) M. Colombo, vive en Los Polvorines Hay 3 personas en Los Polvorines (vive en) !Todo Ok...','addFromDom + $().TExpreso');
+
+		$.TExpreso.addFromUrl('sarasa', function(cant){
+			equal(cant,0, 'url inexistente');
+		});
+		
+		// -- carga template y helper desde arch remoto, renderiza, intenta volver a cargar url sin overwrite
+		
+		$.TExpreso.addFromUrl('files/tests_TExpreso-partials.html', function(cant){
+			equal(cant,2, 'url');
+			equal($.TExpreso.getStatsInfo(),'jQuery TExpreso statistics -> templates: 3 [tpl-1, tpl-2, remote-tpl], helpers: 3 [set, if, entreCorchetes]', 'url & getStatsInfo');
+			equal(ET.express( "remote-tpl", {} ).trim(), 'Result: [--(esto fue cargado desde un url)--]', 'render del remote' );
+			
+			$.TExpreso.addFromUrl('files/tests_TExpreso-partials.html', function(cant){
+				equal(cant,0,'no cargar url antes cargado');
+			});
+		});
+		
+		start(); 
+		$(lapso).append('<br>... 2 Tardó : '+ (new Date()-clk) +' ms.');
+	});
+	
+/*			
+	1         2         3         4  	      5         6         7         8
+012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+*/			
+
+/** 
+* Decompila el template code desde el arbol de nodos (compilado).
+* ej: code = logScript(TPL.get('t1'));   		// decompila sin reindentar
+* ej: code = logScript(TPL.get('t1'),'',true);  // decompila reindentando, lindo!
+*/
+	
+function logScript(node, ind, reIndent) {		// para usarlo en test
+	var buf = '', xind = '', xlf = '';
+	if (reIndent) { xind = '\t'; xlf = '\n'; };
+	var ite = function(arr, ind) {
+		for (var i in arr) {
+			if (typeof arr[i]=='string') buf = buf + ind + arr[i] + xlf;
+			else buf = buf + logScript(arr[i], ind, reIndent);
+		}    
+	};
+	ind = ind || '';
+	var h = node.op[0] === 'prog';
+	var opx = [].concat(node.op);
+	buf = buf + ( h ? '' : ind + '{{' + opx.shift() + opx.join(' ') + '}}' + xlf );
+	ite( node.T, ind+(h?'':xind) );
+	if (node.E) {
+		buf = buf + ind + '{{else}}' + xlf;
+		ite( node.E, ind+(h?'':xind) );
+	};	
+	buf = buf + ( h ? '' : ind + '{{end}}' + xlf );
+	return buf;
+};
+</script>
+
+<!-- TEMPLATES PARA TEST -->
+
+<script id="tpl-1" type="text/html">
+	
+	{{^ rows}}
+		Nooooooo ERRORRRRR 1!!
+	{{else }}
+		Si...<br>
+		{{ # if  rows.length == 3 }}
+			{{set $x "vive en"}}
+		{{else}}	
+			{{set $x "no vive en"}}
+		{{ end }}	
+	{{end}}
+	
+	
+	<div class="entry">
+		<div class="body">
+			{{# rows}}
+				{{> tpl-2 }}
+			{{else}}
+				Nooooooo ERRORRRRR 2!!
+			{{ end }}
+			{{# $f}}
+				<br>Hay {{rows.length}} personas en {{lugar}} ({{$x}}) !
+				{{^ $f }}
+					Nooooooo ERRORRRRR 3!!
+				{{else }}
+					Todo Ok
+				{{end}}
+			{{else }}
+				Nooooooo ERRORRRRR 4!!
+			{{end}}
+			...
+		</div>
+	</div>
+	
+</script>
+
+<script id="tpl-2" type="text/html">
+	{{%row}}) {{#if nombre.length==1}}{{nombre}}.{{else}}{{nombre}}{{end}} {{ apellido   }}, {{ $x }} {{ lugar }} <br>
+	{{set $f 0}}
+</script>
+
+
+    </body>
+ </html>

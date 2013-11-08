@@ -1,0 +1,17 @@
+<!-- 
+		Este archivo forma parte del tests de TExpreso templates  
+		
+		(ver: tests_TExpreso.html) 
+-->
+
+<script id="remote-tpl" type="text/html" data-template="partial" >
+	
+	{{ set $u "(esto fue cargado desde un url)" }}
+	Result: {{entreCorchetes $u}}
+</script>
+
+<script id="entreCorchetes" type="text/html" data-te-type="helper" >
+	<!-- las funciones helpers deben ser anonimas (y entre paréntesis) -->
+	( function(par, options) { return '[--'+ par +'--]'; } );
+	
+</script>
