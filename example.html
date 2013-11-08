@@ -1,0 +1,106 @@
+ <!DOCTYPE html>
+<html>
+	<head>
+		<title>Example TExpreso Template Engine</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	</head>
+	<body>
+		<br>
+		<ul>
+		<li>
+			<h2>Ejemplo 1</h2>
+			<h3>Caso 1:</h3> <div id="ej-1-1"></div> 
+		</li>
+		<li>
+			<h2>Ejemplo 2</h2>
+			<h3>Caso 1:</h3> <div id="ej-2-1"></div> 
+			<h3>Caso 2:</h3> <div id="ej-2-2"></div> 
+		</li>	
+		</ul>
+		<div id="lapso"></div> 
+
+	<script src="test/etc/jquery-1.9.1.min.js"></script>
+
+	<script src="TExpreso.js"></script>
+	<script src="jquery.TExpreso.js"></script>
+
+
+
+<script type="text/javascript">
+
+$(document).ready( function() {
+	
+	var lapso = document.getElementById("lapso");
+	var clock = new Date();
+	
+	// Rastrea y compila TODOS los templates que haya en el DOM (como: <script type='text/html' ...>)
+	
+	$.TExpreso.addFromDom();
+
+	// EJEMPLO 1
+	// =========
+
+	// definir contexto de datos del ej 1 caso 1
+	
+	var datos = { nombre: "Jorge", saludo: "Buenos días" };
+	
+	// renderizar en div#ej-1-1
+
+	$('#ej-1-1').texpreso( 'template-1', datos );
+
+	
+	// EJEMPLO 2
+	// =========
+	
+	// definir contexto de datos del ej 2 caso 1
+	
+	datos = {
+		persons: [
+			{ firstName: 'Jorge', lastName: 'Colombo', address: { city: 'Los Polvorines', province: 'BA' }  },
+			{ firstName: 'Patry', lastName: 'Gutierrez', address: { city: 'Los Polvorines', province: 'BA' }  },
+		]
+	};
+	
+	// renderizar en div#ej-2-1
+	
+	$('#ej-2-1').texpreso( 'template-2', datos );
+
+	// definir contexto de datos del ej 2 caso 2
+	
+	datos = { persons: [] };
+	
+	// renderizar en div#ej-2-2
+	
+	$('#ej-2-2').texpreso( 'template-2', datos );
+
+	
+	// ... cuanto tardó ?
+	
+	$(lapso).append('Tardó en total: '+ (new Date()-clock) +' miliseg.');
+	$(lapso).append('<BR>'+$.TExpreso.getStatsInfo());
+});	
+</script>
+
+
+
+<!-- TEMPLATES -->
+
+<script id="template-1" type="text/html">
+	<p>{{saludo}} {{ nombre }} ! </p>
+</script>
+
+<script id="template-2" type="text/html">
+{{# if persons.length > 0 }}
+	<ul>
+	{{#persons}}
+		<li> <b>{{firstName}} {{lastName}}</b> vive en {{address.city}} </li> 
+	{{ end }}  
+	</ul>
+	<p>Hay {{persons.length}} personas</p>
+{{ else }}
+	<p>No hay personas!</p>
+{{ end }}
+</script>
+
+	</body>
+ </html>

@@ -28,7 +28,7 @@
 			MEM = {};
 			rexpHlps = {};
 			self.addHelper('set', _h_set);	// built-in helper "set"
-			self.addHelper('if', _h_if, false, /[%\$\w][\w\.\$]*|\=\=|!\=|>\=|<\=/g );	// built-in helper "if"
+			self.addHelper('if', _h_if, false, /[%\$\w][\w\.\$]*|>|<|\=\=|!\=|>\=|<\=/g );	// built-in helper "if"
 			self.overwrite = false;			// sobrescribir templates ante .add() de uno ya registrado (default: false)
 			self.VERSION = VERSION;
 			self.ME = 'TExpreso v.'+VERSION;
@@ -339,7 +339,7 @@
 				if (options.op.length==3) v = !!par[0];	// forma: {{#if y}} value... {{end}}
 				else {									// forma: {{#if y == x}} value... {{end}}
 					var op = options.op[3]||'';
-					v = op=='==' ? par[0]==par[2] : op=='!=' ? par[0]!=par[2] : op=='>=' ? par[0]>=par[2] : op=='<=' ? par[0]<=par[2] : _error('invalid "if": '+options.op.join(' '))||'';
+					v = op=='==' ? par[0]==par[2] : op=='!=' ? par[0]!=par[2] : op=='>' ? par[0]>par[2] : op=='<' ? par[0]<par[2] : op=='>=' ? par[0]>=par[2] : op=='<=' ? par[0]<=par[2] : _error('invalid "if": '+options.op.join(' '))||'';
 				};
 				rv = v ? options.T(options.s) : options.E(options.s);
 			};
