@@ -4,7 +4,9 @@ Liviano y veloz renderizador de datos a través de plantillas (Template Engine) 
 A diferencia de los anteriores, cuenta con estructuras if..else..end, además de auto-path del contexto de datos y bloques auto-condicionales y auto-iterativos. 
 Es súmamente simple de usar y al igual que Handlebars permite embeber funciones "helpers".
 
-Incluye un plugin de jQuery (jquery.TExpreso.js) que facilita tanto la carga de templates y helpers desde urls remotas, como también su renderización dentro de elementos html. 
+Incluye un plugin de jQuery (jquery.TExpreso.js) que facilita tanto la carga de templates y helpers desde urls remotas, como también su renderización dentro de elementos html.
+
+Sin mostrar aún los métodos de renderizado, veamos un par de ejemplos sólo de <b>templates + datos</b> para entender su funcionalidad...
 
 <b>Ejemplo 1:</b> 
   
@@ -62,9 +64,9 @@ var myContext = {
   <p>Hay 2 personas</p>
 </div>
 ```
-  *PERO, al renderizarlo este contexto de datos:*
+  *Pero, al renderizarlo con este contexto:*
 ```html
-var myContext = { persons: [ ] };
+var myContext = { persons: [] };
 ```
   *el resultado será entonces:*<br>
 ```html
