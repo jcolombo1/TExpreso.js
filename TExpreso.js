@@ -19,7 +19,7 @@
 	function TExpreso() { 
 
 		var self 	= this,
-			VERSION	= '1.0',
+			VERSION	= '1.1',
 			rexp 	= { DBEG: '\\{\\{', DEND: '\\}\\}' },
 			cache, MEM, rexpHlps;	
 	
@@ -51,7 +51,7 @@
 			if (cache.tpl[tname] && !(overwrite||self.overwrite)) { console.info('try overwrite template: '+tname); return false;};
 			self.tname = tname; self.error = '';  //actual template, reset error
 			var tpl = typeof addInterceptor==='function' ? _parse( addInterceptor(tname,str) ) : _parse(str);
-			if (tpl) cache.tpl[tname] = tpl;
+			if (tpl) cache.tpl[tname] = tpl; else if (cache.tpl[tname]) cache.tpl[tname] = undefined;  // (si ya existía set undefined si parser error)
 			return tpl;
 		};
 		
@@ -178,7 +178,7 @@
 						ok=true;
 					} else {
 						var x = op.length==2 ? _get(scope,op[1]) : null, inv = op[0]=='^';
-						if ( (!!x && !inv)||(!x && inv) ) { // por true/object/etc 
+						if ( ((!!x||x===0) && !inv)||((!x&&x!==0) && inv) ) { // por true/object/etc 
 							if (x instanceof Array) {
 								if (x.length>0) {
 									for (var j in x) {
@@ -210,7 +210,7 @@
 					buf += self.render(op[1], scope, true);  // retain MEM
 				} else {
 					var fn, x = op.length==2 ? _get(scope,op[1]) : null;
-					if (x) buf += x;
+					if (x||x===0) buf += x;
 					else if ( (fn=cache.hlp[op[1]]) ) {	// helper no-block
 						buf += fn( _helperPars(op, scope), {op: op, s: scope, get: _get, _error: _error, cache: cache});
 					}	

@@ -21,8 +21,8 @@
 
 	<script src="test/etc/jquery-1.9.1.min.js"></script>
 
-	<script src="TExpreso.js"></script>
-	<script src="jquery.TExpreso.js"></script>
+	<script src="TExpreso.min.js"></script>
+	<script src="jquery.TExpreso.min.js"></script>
 
 
 
@@ -33,7 +33,7 @@ $(document).ready( function() {
 	var lapso = document.getElementById("lapso");
 	var clock = new Date();
 	
-	// Rastrea y compila TODOS los templates que haya en el DOM (como: <script type='text/html' ...>)
+	// Rastrea y compila TODOS los templates que haya en el DOM (como: <script type='text/html' ...> )
 	
 	$.TExpreso.addFromDom();
 
@@ -57,7 +57,7 @@ $(document).ready( function() {
 	datos = {
 		persons: [
 			{ firstName: 'Jorge', lastName: 'Colombo', address: { city: 'Los Polvorines', province: 'BA' }  },
-			{ firstName: 'Patry', lastName: 'Gutierrez', address: { city: 'Los Polvorines', province: 'BA' }  },
+			{ firstName: 'Patry', lastName: 'Gutiérrez', address: { city: 'Los Polvorines', province: 'BA' }  },
 		]
 	};
 	
@@ -93,7 +93,7 @@ $(document).ready( function() {
 {{# if persons.length > 0 }}
 	<ul>
 	{{#persons}}
-		<li> <b>{{firstName}} {{lastName}}</b> vive en {{address.city}} </li> 
+		<li> {{%index}} ) <b>{{firstName}} {{lastName}}</b> vive en {{address.city}}</li> 
 	{{ end }}  
 	</ul>
 	<p>Hay {{persons.length}} personas</p>

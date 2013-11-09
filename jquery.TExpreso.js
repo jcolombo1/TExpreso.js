@@ -19,7 +19,7 @@
 (function ($, window) {
     'use strict';
 	
-    var VERSION = '1.0',
+    var VERSION = '1.1',
 		urls = [],	
 		ATTR_TPL_NAME = 'data-te-name',
 		ATTR_TPL_TYPE = 'data-te-type',
@@ -42,7 +42,7 @@
 	*/
 	function getStatsInfo() { 
 		var af = function(x) { x=x?x:'template'; var ns = getTExpreso().names(x); return x+'s: '+( ns.length>0 ? ns.length+' ['+ns.join(', ')+']' : '(no)' ); };
-		return 'jQuery TExpreso statistics -> '+af()+', '+af('helper');
+		return $.TExpreso.ME + ' >> '+af()+', '+af('helper');
 	};
 	
 	/**
@@ -153,6 +153,6 @@
 			$(this).html( inst.render( tpl, data, retainMem ) ); 
 		});
 	};
-	$.fn.TExpreso = $.fn.texpreso;  // sinonimo en minuscs !
+	$.fn.TExpreso = $.fn.texpreso;  // sinonimo en minusc
 	
 }(jQuery, window));

@@ -7,7 +7,7 @@ Es súmamente simple de usar y al igual que Handlebars permite embeber funciones
 Incluye un plugin de jQuery (jquery.TExpreso.js) que facilita tanto la carga de templates y helpers desde urls remotas, como también su renderización dentro de elementos html.
 
 Sin mostrar aún los métodos de renderizado, veamos un par de ejemplos sólo de <b>templates + datos</b> para entender su funcionalidad...
-<em>Nota: Estos ejemplos están en el archivo "example.html" -puede observarlo en el explorador-)</em>
+<br><em><b>Nota</b>: Estos ejemplos están contenidos en el archivo "example.html" (obsérvelos en su explorador).</em>
 
 <b>Ejemplo 1:</b> 
   
