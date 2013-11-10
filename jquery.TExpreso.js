@@ -33,7 +33,7 @@
 		return window.TExpreso;
 	};
 
-	function has(tname, ttype) { getTExpreso().has(tname, ttype); };
+	function has(tname, ttype) { return getTExpreso().has(tname, ttype); };
 	
 	function hasUrl(tname) { return urls.indexOf(tname) >= 0 };
 
@@ -64,9 +64,9 @@
 	* Si el <script> indica attr: data-te-type='helper' se tomará su contenido como helper (debe ser function anonima).
 	*/
 	function addFromUrl(url, doit, overwrite) {
-		if (!url || ( !overwrite && hasUrl(url))) { 
+		if (!url || ( !overwrite && hasUrl(url))) { // antes ver si ya fue cargado el url
 			if (doit) doit(0); return; 
-		};  // antes ver si ya fue cargado el url
+		};  
 		var cant=0;
 		return $.ajax({
 				url: url,
