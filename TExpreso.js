@@ -315,7 +315,7 @@
 			return; 
 		};
 
-		function _error(m) { self.error = m = '[ '+self.tname+' ] '+ m; console.error(m, ' '); };
+		function _error(m) { self.error = m = '[ template: '+self.tname+' ] '+ m; console.error(m, ' '); };
 		
 		//  build-in helpers
 		

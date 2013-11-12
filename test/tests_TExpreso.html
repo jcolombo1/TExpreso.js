@@ -62,7 +62,12 @@
 		scr = 'aaa{{b }}';
 		ET.add('t1', scr);
 		equal( ET.render('t1', {b:'-'}), 'aaa-', 'rend min-' );
-	
+
+		scr = "<!-- hola --> {{> t2}}"; 
+		ET.add('t1', scr);
+		equal( ET.render('t1', {b:'#'}), '<!-- hola --> aaa#ccc', 'c/ partial' );
+		equal( ET.error, '', 'NOT ERROR: c/ partial');
+
 		scr = '000{{ > t2 }}111'; 
 		ET.add('t1', scr);
 		equal( ET.render('t1', {b:'#'}), '000aaa#ccc111', 'rend c/ partial' );
@@ -107,13 +112,11 @@
 		
 		scr = '000{{#t}}{{ > t2 }}{{end}}111{{end}}xxx';
 		ET.add('t1', scr);
-		equal( ET.error, '[ t1 ] invalid spare "end"', 'add ERROR: sobra end' );
-		equal( ET.render('t1', {t:true}), '', 'ERROR: sobra end' ); //////////
+		equal( ET.error, '[ template: t1 ] invalid spare "end"', 'add ERROR: sobra end' );
 
 		scr = '000{{#t}}{{ > t2 }}{{end}}111{{else}}';
 		ET.add('t1', scr);
-		equal( ET.error, '[ t1 ] invalid spare "else" for: ??', 'add ERROR: sobra else' );
-		equal( ET.render('t1', {t:true}), '', 'ERROR: sobra else' ); /////////////
+		equal( ET.error, '[ template: t1 ] invalid spare "else" for: ??', 'add ERROR: sobra else' );
 
 		// ---- Helper no-block
 		
@@ -161,12 +164,12 @@
 		scr = '{{ set $a.b }}';
 		ET.add('t1', scr);
 		equal( ET.render('t1', {}), '', 'ERROR: set' );
-		equal( ET.error, '[ t1 ] invalid var in "set": "$a.b"', 'ERROR: set' );
+		equal( ET.error, '[ template: t1 ] invalid var in "set": "$a.b"', 'ERROR: set' );
 		
 		scr = '{{ set ab }}';
 		ET.add('t1', scr);
 		equal( ET.render('t1', {}), '', 'ERROR: set 2' );
-		equal( ET.error, '[ t1 ] invalid var in "set": "ab"', 'ERROR: set, comenzar c/ $' );
+		equal( ET.error, '[ template: t1 ] invalid var in "set": "ab"', 'ERROR: set, comenzar c/ $' );
 	
 		scr = '{{ set $a }}{{ set $b="x" "y"}}{{ set $c = ccc }}{{ set $d "hola"}}{{ set $e "buen" " dia"}}{{$a}}{{$b}}{{$c}}{{$d}}{{$e}}';
 		ET.add('t1', scr);
@@ -237,7 +240,7 @@
 		ET.reset();
 		ET.overwrite = true;
 		
-		equal($.TExpreso.getStatsInfo(),'jQuery TExpreso v.1.0 ( TExpreso v.1.0 ) >> templates: (no), helpers: 2 [set, if]', 'nada en getStatsInfo');
+		equal($.TExpreso.getStatsInfo(),'jQuery TExpreso v.1.1 ( TExpreso v.1.1 ) >> templates: (no), helpers: 2 [set, if]', 'nada en getStatsInfo');
 		
 		var tpls=[], interceptor = function(n,c){ tpls.push(n); return c; };   // n = template name, c = contenido
 		
@@ -256,7 +259,7 @@
 		
 		$.TExpreso.addFromUrl('files/tests_TExpreso-partials.html', function(cant){
 			equal(cant,2, 'url');
-			equal($.TExpreso.getStatsInfo(),'jQuery TExpreso v.1.0 ( TExpreso v.1.0 ) >> templates: 3 [tpl-1, tpl-2, remote-tpl], helpers: 3 [set, if, entreCorchetes]', 'url & getStatsInfo');
+			equal($.TExpreso.getStatsInfo(),'jQuery TExpreso v.1.1 ( TExpreso v.1.1 ) >> templates: 3 [tpl-1, tpl-2, remote-tpl], helpers: 3 [set, if, entreCorchetes]', 'url & getStatsInfo');
 			equal(ET.express( "remote-tpl", {} ).trim(), 'Result: [--(esto fue cargado desde un url)--]', 'render del remote' );
 			
 			$.TExpreso.addFromUrl('files/tests_TExpreso-partials.html', function(cant){
@@ -265,7 +268,9 @@
 		});
 		
 		start(); 
+		
 		$(lapso).append('<br>... 2 Tardó : '+ (new Date()-clk) +' ms.');
+		$('#view').html('');
 	});
 	
 /*			

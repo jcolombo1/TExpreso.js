@@ -72,7 +72,7 @@
 				url: url,
 				dataType: 'text', 
 			}).done(function (d) {
-				$(d).filter('script').each(function (i,el) {
+				$(d.trim()).filter('script').each(function (i,el) {
 					var rv=false, id = $(el).attr(ATTR_TPL_NAME), ttype = $(el).attr(ATTR_TPL_TYPE);
 					if (ttype=='helper') rv = getTExpreso().addHelper( (id?id:el.id), eval($(el).html()), overwrite );
 					else rv = getTExpreso().add( (id?id:el.id), $(el).html(), overwrite, options.addInterceptor );
@@ -138,6 +138,7 @@
 		getNames: getTExpreso().names,									// ( [ ttype ] ) "template" | "helper" (default: "template")
 		has: has,
 		hasUrl: hasUrl,
+		TExpreso: getTExpreso(),
 	};
 
 	/** 
