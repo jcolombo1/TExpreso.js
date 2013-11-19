@@ -21,7 +21,7 @@
 
  
 <script type="text/javascript">
-
+	
 	var view = document.getElementById("view");
 	var lapso = document.getElementById("lapso");
 	var clk;
@@ -51,7 +51,6 @@
 		equal( ET.error, '', 'not ERROR' );
 
 		deepEqual( logScript( ET.get('t1', {test:true} )), scr, 'get del previo'); // aun está t1?
-
 
 		scr = 'aaa{{b }}ccc';		///////// t2 /////////
 		ET.add('t2', scr);
@@ -120,7 +119,7 @@
 
 		// ---- Helper no-block
 		
-		helper = function(p) { return p[0]+p[1]+p[2]; };
+		helper = function(ops) { var p = ops._getx(ops.op, ops.s); return p[0]+p[1]+p[2]; };
 		ET.addHelper('h1', helper);
 		
 		scr = "000{{h1 a 'alfa==' c }}111";
@@ -133,12 +132,13 @@
 
 		// ---- Helper block
 		
-		helper = function(pars, opts) {
+		helper = function(ops) {
+			var pars = ops._getx(ops.op, ops.s);
 			var v = pars[0], x;
 			for (var i in v) {
 				if (!x || v[i].e < x.e) x = v[i];
 			};
-			return x ? opts.T(x) : opts.E ? opts.E() : ''; 
+			return x ? ops.T(x) : ops.E ? ops.E() : ''; 
 		};
 		ET.addHelper('menor', helper);
 
@@ -157,7 +157,37 @@
 		// -- .names() --
 		
 		deepEqual( ET.names(), ["t1","t2"], 'names - default');
-		deepEqual( ET.names('helper'), ["set", "if", "h1", "menor"], 'names - helpers');
+		deepEqual( ET.names('helper'), ["set", "if", "|", "h1", "menor"], 'names - helpers');
+		
+		// -- "|" helper --
+		
+		scr = '{{| a b b.c}}';
+		equal( ET.express(scr, { a: false, b: {c: 'hola!'} } ), 'hola!', 'barra | helper');
+
+		// -- "if" helper --
+
+		scr = '{{if true}}';
+		equal( ET.express(scr, {} ), '', 'if sin #');
+		equal( ET.error, '[ template: ??? ] invalid "if" (should be #if)', 'ERROR: if sin #' );
+
+		scr = '{{#if a}}{{b.c}}{{else}}NOO{{end}}';
+		equal( ET.express(scr, { a: true, b: {c: 'holax!'} } ), 'holax!', 'if helper');
+		 
+		scr = '{{#if !a && b.c}}{{b.c}}{{else}}NOO{{end}}';
+		equal( ET.express(scr, { a: false, b: {c: 'hola!'} } ), 'hola!', 'if helper ||');
+
+		scr = '{{#if v.length }}NOO{{else}}{{b.c}}{{end}}';
+		equal( ET.express(scr, { v: [], b: {c: 'holax!'} } ), 'holax!', 'if helper c/array vacia');
+
+		scr = '{{#if v}}{{#v}}{{%content}}{{end}}{{else}}NOO{{end}}';
+		equal( ET.express(scr, { v: ['x','y'] } ), 'xy', 'if helper c/array & %content');
+
+		scr = '{{#if v}}{{#v}}{{val}}{{end}}{{else}}NOO{{end}}';
+		equal( ET.express(scr, { v: [ {val:111}, {val:222} ] } ), '111222', 'if helper c/array de objects');
+
+		scr = '{{set $x "hola"}}{{#if !!($x && b.c.trim()===(($x)) && true && b.c.trim( ).trim().length==4 &&($y|| b.c.x|| $x)) }}OK{{else}}NOO{{end}}';
+		//scr = '{{#if b.c.trim().trim().length}}OK{{end}}'
+		equal( ET.express(scr, { b:{c:'hola  '} } ), 'OK', 'if helper - complex condition & native function');
 
 		// -- set helper --
 		
@@ -204,10 +234,10 @@
 
 		scr = '{{^t}}{{^n}}Saludos: {{#a}}{{b}}{{a.b}}{{end}}{{ end }}{{end}}';
 		equal( ET.express(scr, { t: false, a: {b:'hola!'} } ), 'Saludos: hola!hola!', 'inverse block child & parent scope' );
-
-		scr = '[[#t]][[a.b]][[else]]NO[[end]]';
+		
+		scr = '[[#t]][[a.b]][[else]]/*  comentarios!!  */NO[[end]]';
 		ET.delimiter('[');
-		equal( ET.express(scr, { t: true, a: {b:'Ok!'} } ), 'Ok!', 'delimiter' );
+		equal( ET.express(scr, { t: true, a: {b:'Ok!'} } ), 'Ok!', 'delimiter & comentarios' );
 		ET.delimiter();
 		
 		ET.add('tpl-2', document.getElementById("tpl-2").text);
@@ -240,7 +270,7 @@
 		ET.reset();
 		ET.overwrite = true;
 		
-		equal($.TExpreso.getStatsInfo(),'jQuery TExpreso v.1.1 ( TExpreso v.1.1 ) >> templates: (no), helpers: 2 [set, if]', 'nada en getStatsInfo');
+		equal($.TExpreso.getStatsInfo(), $.TExpreso.ME+' >> templates: (no), helpers: 3 [set, if, |]', 'nada en getStatsInfo');
 		
 		var tpls=[], interceptor = function(n,c){ tpls.push(n); return c; };   // n = template name, c = contenido
 		
@@ -259,7 +289,7 @@
 		
 		$.TExpreso.addFromUrl('files/tests_TExpreso-partials.html', function(cant){
 			equal(cant,2, 'url');
-			equal($.TExpreso.getStatsInfo(),'jQuery TExpreso v.1.1 ( TExpreso v.1.1 ) >> templates: 3 [tpl-1, tpl-2, remote-tpl], helpers: 3 [set, if, entreCorchetes]', 'url & getStatsInfo');
+			equal($.TExpreso.getStatsInfo(), $.TExpreso.ME+' >> templates: 3 [tpl-1, tpl-2, remote-tpl], helpers: 4 [set, if, |, entreCorchetes]', 'url & getStatsInfo');
 			equal(ET.express( "remote-tpl", {} ).trim(), 'Result: [--(esto fue cargado desde un url)--]', 'render del remote' );
 			
 			$.TExpreso.addFromUrl('files/tests_TExpreso-partials.html', function(cant){
@@ -310,18 +340,19 @@ function logScript(node, ind, reIndent) {		// para usarlo en test
 <!-- TEMPLATES PARA TEST -->
 
 <script id="tpl-1" type="text/html">
-	
 	{{^ rows}}
-		Nooooooo ERRORRRRR 1!!
+		Nooooooo ERRORRRRR 1!!  /* comentario 1 */
 	{{else }}
 		Si...<br>
 		{{ # if  rows.length == 3 }}
 			{{set $x "vive en"}}
 		{{else}}	
-			{{set $x "no vive en"}}
+/* comentario 2 */ {{set $x "no vive en"}}
 		{{ end }}	
 	{{end}}
 	
+	//* comentario 3 *//* comentario 4 */
+	//* comentario 5 */
 	
 	<div class="entry">
 		<div class="body">

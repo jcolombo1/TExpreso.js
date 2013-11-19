@@ -1,0 +1,17 @@
+2013-11-15:	v 1.2
+
+	* :	Al iterar sobre arrays, además de los builtins %row e %index, si el item NO es typeof object, 
+		se agrega var '%content' con ese valor, que podría ser imprimible (string/number) u otro array.
+
+	* :	Helper "if" {{#if <conditions> }} .. [ {{else}} .. ] {{end}}, ahora preve condiciones complejas 
+		mediante creación dinámica (new Function()). Por ej: 
+		{{ #if !!( "hola"===b.c.trim() && ( $y || b.c.x || $x)) }}
+
+2013-11-13:
+
+	+ :	Soporta "comentarios de template" entre /* xxx xx xxx * / (sólo in-line).
+
+	+ :	Helper "|" (barra vert.) {{| a b ..}} ó {{#| a b ..}} xx {{end}}
+		Funciona análogo a: ( a || b || ..) devuelve el primer arg c/valor. 
+		Si un arg es typeof object lo considera como false ya que debe ser un "valor imprimible".
+

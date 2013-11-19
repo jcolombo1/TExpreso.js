@@ -12,6 +12,9 @@
 
 <script id="entreCorchetes" type="text/html" data-te-type="helper" >
 	<!-- las funciones helpers deben ser anonimas (y entre paréntesis) -->
-	( function(par, options) { return '[--'+ par +'--]'; } );
+	( function(options) { 
+		var par = options._getx(options.op, options.s);
+		return '[--'+ par +'--]'; } 
+	);
 	
 </script>

@@ -10,7 +10,6 @@
 *
 *  contacto: jcolombo@ymail.com
 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*	
 */
 
 (function (window) {
@@ -19,7 +18,7 @@
 	function TExpreso() { 
 
 		var self 	= this,
-			VERSION	= '1.1',
+			VERSION	= '1.2',
 			rexp 	= { DBEG: '\\{\\{', DEND: '\\}\\}' },
 			cache, MEM, rexpHlps;	
 	
@@ -28,7 +27,8 @@
 			MEM = {};
 			rexpHlps = {};
 			self.addHelper('set', _h_set);	// built-in helper "set"
-			self.addHelper('if', _h_if, false, /[%\$\w][\w\.\$]*|>|<|\=\=|!\=|>\=|<\=/g );	// built-in helper "if"
+			self.addHelper('if', _h_if);	// built-in helper "if"
+			self.addHelper('|', _h_bar);	// built-in helper "|"
 			self.overwrite = false;			// sobrescribir templates ante .add() de uno ya registrado (default: false)
 			self.VERSION = VERSION;
 			self.ME = 'TExpreso v.'+VERSION;
@@ -116,6 +116,7 @@
 		*/
 		this.express = function(arg1, arg2, arg3) {
 			var sco = (arg3!==undefined ? arg3 : arg2), rv = '', e;
+			self.tname = '???'; self.error = '';
 			if (!/^[\w-:\.]+$/g.test(arg1)) return _rend( _parse(arg1)['T'], sco);
 			if (!cache.tpl[arg1]) if ((e=window.document.getElementById(arg1))) { self.add(arg1, e.text); console.info('agrega '+arg1); };
 			if ((rv=self.render(arg1, sco))) if ((e=window.document.getElementById(arg2))) e.innerHTML = rv;
@@ -174,7 +175,7 @@
 						// helper block  
 						var t = function(sc){ return _rend(node[i].T, _doScope(sc,scope)); };
 						var e = function(sc){ return node[i].E?_rend(node[i].E, _doScope(sc,scope)):''; };
-						buf += fn( _helperPars(op, scope), {T: t, E: e, op: op, s: scope, get: _get, _error: _error, cache: cache} );
+						buf += fn( {T: t, E: e, op: op, s: scope, m: MEM, get: _get, _getx: _getx, _error: _error, cache: cache} );
 						ok=true;
 					} else {
 						var x = op.length==2 ? _get(scope,op[1]) : null, inv = op[0]=='^';
@@ -182,7 +183,8 @@
 							if (x instanceof Array) {
 								if (x.length>0) {
 									for (var j in x) {
-										var row = x[j]; row['%index'] = parseInt(j); row['%row'] = parseInt(j)+1;  // buildin array vars (%index y %row)
+										var row = typeof x[j]==='object' ? x[j] : { '%content': x[j] }; 
+										row['%index'] = parseInt(j); row['%row'] = parseInt(j)+1;  // buildin array vars (%index y %row)
 										buf += _rend( node[i].T, _doScope(row,scope) );
 									};
 									ok=true;
@@ -204,7 +206,7 @@
 			var buf = '', m, pat = new RegExp(rexp.DBEG+'\\s*[^'+rexp.DEND+']+\\s*'+rexp.DEND, 'gm');
 			while ((m=pat.exec(str))) {
 				pp = np; bp = m.index; np = m[0].length+m.index;
-				buf += str.substring(pp, bp);	
+				buf += _rmvcms(str.substring(pp, bp));
 				var op = _opMaker(str.substring(bp, np));
 				if (op[0]==='>') {
 					buf += self.render(op[1], scope, true);  // retain MEM
@@ -212,27 +214,20 @@
 					var fn, x = op.length==2 ? _get(scope,op[1]) : null;
 					if (x||x===0) buf += x;
 					else if ( (fn=cache.hlp[op[1]]) ) {	// helper no-block
-						buf += fn( _helperPars(op, scope), {op: op, s: scope, get: _get, _error: _error, cache: cache});
-					}	
+						buf += fn( {op: op, s: scope, m: MEM, get: _get, _getx: _getx, _error: _error, cache: cache} );
+					}
 				}
 			};
-			return buf + str.substring(np, str.length);	
+			return buf + _rmvcms(str.substring(np, str.length));
 		};
 
+		function _rmvcms(str) { return str.replace(/\/+\*.+?\*\//g,''); };
+		
 		function _doScope(loc, parent) {
 			if (typeof parent==='object' && loc!==parent) loc['..'] = parent;
 			return loc;
 		};
 		
-		function _helperPars(op, scope) {
-			var pars=[], ps = [].concat(op); 
-			ps.shift(); ps.shift(); //descartar 0 y 1 (mark y hlpr name)
-			for (var i in ps) { 
-				pars.push( _get(scope,ps[i]) || '' ); 
-			};
-			return pars;
-		};
-
 		function _parse (str) {
 			if (!str) return null;
 			
@@ -297,6 +292,14 @@
 			return rv;
 		};
 
+		/**
+		 * Retorna el valor o contenido de una variable obtenida desde el object-scope suministrado.
+		 *
+		 * ._get( o, p )			Returns: valor
+		 *
+		 * @param o			object scope desde donde obtener el valor
+		 * @param ttype		property (nombre, path completo de la variable)
+		*/
 		function _get(o,p) {
 			var r, s, mem;
 			try{
@@ -310,16 +313,22 @@
 					} catch(x){	r = undefined }; 
 					if (r===undefined && mem['..']) r = _get(mem['..'], p); 	//** busca valor en parents (recursiva!)
 				};
-				return r; 
 			} catch(x){}; 
-			return; 
+			return r; 
+		};
+		
+		function _getx(op, scope) {  
+			var pars=[], ps = op.slice(2); //descartar 0-1 (mark y hlp name)
+			for (var i in ps) { pars.push( _get(scope,ps[i]) || '' ); };
+			return pars;
 		};
 
 		function _error(m) { self.error = m = '[ template: '+self.tname+' ] '+ m; console.error(m, ' '); };
 		
 		//  build-in helpers
 		
-		function _h_set(par, options) {
+		function _h_set(options) {
+			var vals = options._getx( options.op, options.s );
 			var sfx = function(p,v) { 
 				if (/^\$\w+$/.test(p)) MEM[p] = v;
 				else options._error('invalid var in "set": "'+p+'"');
@@ -327,25 +336,48 @@
 			if (typeof options.T=='function') {		// forma: {{#set key}} value... {{end}}
 				sfx( (options.op[2]||''), options.T(options.s) );
 			} else {								// forma: {{set key value}}  
-				par.shift(); 
-				sfx( (options.op[2].replace('=','')||''), (par.join('')||'') );
+				vals.shift(); 
+				sfx( (options.op[2].replace('=','')||''), (vals.join('')||'') );
 			};
 			return '';
 		};	
 
-		function _h_if(par, options) {
-			var rv = '', v;
-			if (typeof options.T=='function') {		
-				if (options.op.length==3) v = !!par[0];	// forma: {{#if y}} value... {{end}}
-				else {									// forma: {{#if y == x}} value... {{end}}
-					var op = options.op[3]||'';
-					v = op=='==' ? par[0]==par[2] : op=='!=' ? par[0]!=par[2] : op=='>' ? par[0]>par[2] : op=='<' ? par[0]<par[2] : op=='>=' ? par[0]>=par[2] : op=='<=' ? par[0]<=par[2] : _error('invalid "if": '+options.op.join(' '))||'';
+		function _h_if(options) {
+			//forma: {{#if <conditions> }} .. [ {{else}} .. ] {{end}}
+			//Nota: "if" no recorre ascendencia para obtener el valor de un objeto (como lo hace _get())
+			var v;
+			if (typeof options.T!=='function') { options._error('invalid "if" (should be #if)'); return''; };
+			var rx = /[%\$a-z\.][\w\.\$]*|["'][^"]+?["']/ig;
+			var x, cond='', pp, np=0, bp, m;
+			try { // encabezar cada variable c/ "this."
+				var expr = options.op.slice(2).join(' '); 
+				while ((m=rx.exec(expr))) {
+					pp = np; bp = m.index; np = m[0].length+m.index;
+					cond += expr.substring(pp, bp);
+					cond += ( /^[\."']|true|false|null|undefined|NaN|Infinity/.test(m[0]) ? '' : 'this.' ) + m[0];
 				};
-				rv = v ? options.T(options.s) : options.E(options.s);
+				cond = "return ("+ cond + expr.slice(np) +");";
+				// crea function y la ejecuta (se evita uso de eval)
+				var ctx = {}; 
+				for (var i in options.s) { ctx[i] = options.s[i]; };
+				for (var i in options.m) { ctx[i] = options.m[i]; };
+				var nf = new Function(cond);
+				v = nf.call(ctx);
+			} catch(x) { 
+				options._error(x+' (in "if" condition)');
 			};
+			return ( v ? options.T(options.s) : options.E(options.s) );
+		};
+
+		function _h_bar(options) {
+			// forma: {{#| val}} noVal... {{end}} o forma: {{| val oVal1 oValn ...}}
+			var rv = '', vals = options._getx( options.op, options.s );
+			for(var i in vals) { if (vals[i] && typeof vals[i]!='object'){ rv = vals[i]; break;} };
+			if (typeof options.T=='function' && !rv) rv = options.T(options.s);
+			if (options.E) options._error('invalid "else" in bar helper "|"');
 			return rv;
-		};	
-		
+		};
+
 		self.reset();
 		
 	};
