@@ -18,7 +18,7 @@
 	function TExpreso() { 
 
 		var self 	= this,
-			VERSION	= '1.2',
+			VERSION	= '1.3',
 			rexp 	= { DBEG: '\\{\\{', DEND: '\\}\\}' },
 			cache, MEM, rexpHlps;	
 	
@@ -29,6 +29,8 @@
 			self.addHelper('set', _h_set);	// built-in helper "set"
 			self.addHelper('if', _h_if);	// built-in helper "if"
 			self.addHelper('|', _h_bar);	// built-in helper "|"
+			self.addHelper('|set', _h_barSet);	// built-in helper "|set"
+			self.addHelper('trim', _h_trim);	// built-in helper "trim"
 			self.overwrite = false;			// sobrescribir templates ante .add() de uno ya registrado (default: false)
 			self.VERSION = VERSION;
 			self.ME = 'TExpreso v.'+VERSION;
@@ -184,7 +186,7 @@
 								if (x.length>0) {
 									for (var j in x) {
 										var row = typeof x[j]==='object' ? x[j] : { '%content': x[j] }; 
-										row['%index'] = parseInt(j); row['%row'] = parseInt(j)+1;  // buildin array vars (%index y %row)
+										row['%index'] = parseInt(j); row['%row'] = parseInt(j)+1;  row['%length'] = x.length; // buildin array vars (%index y %row)
 										buf += _rend( node[i].T, _doScope(row,scope) );
 									};
 									ok=true;
@@ -294,24 +296,26 @@
 
 		/**
 		 * Retorna el valor o contenido de una variable obtenida desde el object-scope suministrado.
+		 * En caso de no existir la var ó prop en el actual scope y si se indicó precedida con punto (.) 
+		 * se intentará ubicarla en los parents scopes (ej: " .myVar ").
 		 *
 		 * ._get( o, p )			Returns: valor
 		 *
 		 * @param o			object scope desde donde obtener el valor
-		 * @param ttype		property (nombre, path completo de la variable)
+		 * @param P			property (nombre, path completo de la variable)
 		*/
 		function _get(o,p) {
 			var r, s, mem;
-			try{
+			try{ 
 				if (p=='true') r = true;										//true
 				else if (/^["'].+["']$/.test(p)) r = p.substring(1,p.length-1); //literal
 				else if (/^\d+\.?\d*$/.test(p)) r = p;							//dígitos
-				else if (/^[%\$\w][\w\.\$]*$/.test(p)) {						//en objs
-					try{
-						r = mem = p.charAt(0)=='$' ? MEM : o, s = p.split('.'); 
+				else if (/^\.?[%\$\w][\w\.\$]*$/.test(p)) {						//en objs
+					try {
+						r = mem = p.charAt(0)=='$' ? MEM : o, s = p.charAt(0)=='.' ? p.slice(1).split('.') : p.split('.'); 
 						for (var i in s) { r = r[s[i]]; }; 
 					} catch(x){	r = undefined }; 
-					if (r===undefined && mem['..']) r = _get(mem['..'], p); 	//** busca valor en parents (recursiva!)
+					if (r===undefined && mem['..'] && p.charAt(0)=='.') r = _get(mem['..'], p); 	//** busca en parents si empieza c/ '.' (es recursiva!)
 				};
 			} catch(x){}; 
 			return r; 
@@ -335,16 +339,16 @@
 			};
 			if (typeof options.T=='function') {		// forma: {{#set key}} value... {{end}}
 				sfx( (options.op[2]||''), options.T(options.s) );
-			} else {								// forma: {{set key value}}  
+			} else {								// forma: {{set key value1 value2 valueN}}  
 				vals.shift(); 
-				sfx( (options.op[2].replace('=','')||''), (vals.join('')||'') );
+				sfx( (options.op[2].replace('=','')||''), (typeof vals[0]=='object' ? vals[0] : (vals.join('')||'')) );
 			};
 			return '';
 		};	
 
 		function _h_if(options) {
 			//forma: {{#if <conditions> }} .. [ {{else}} .. ] {{end}}
-			//Nota: "if" no recorre ascendencia para obtener el valor de un objeto (como lo hace _get())
+			//CUIDADO: "if" no recorre ascendencia para obtener el valor de un objeto (como lo hace _get())
 			var v;
 			if (typeof options.T!=='function') { options._error('invalid "if" (should be #if)'); return''; };
 			var rx = /[%\$a-z\.][\w\.\$]*|["'][^"]+?["']/ig;
@@ -378,6 +382,22 @@
 			return rv;
 		};
 
+		function _h_barSet(options) {
+			// forma: {{#|set key val}} noVal... {{end}} o forma: {{|set key val oVal1 oValn ...}}
+			var p = options.op.splice(2,1); //remove item 2
+			if (/^\$\w+$/.test(p)) MEM[p] = _h_bar(options); else options._error('invalid var in "|set": "'+p+'"');
+			return '';
+		};
+
+		function _h_trim(options) {
+			// forma: {{#trim}}...{{end}} 
+			var rv = '';
+			if (typeof options.T=='function') rv = options.T(options.s);
+			else if (options.E) options._error('invalid spare "else" in trim helper');
+			else options._error('invalid trim helper');
+			return rv ? (rv+'').trim() : '';
+		};
+		
 		self.reset();
 		
 	};

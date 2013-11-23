@@ -157,7 +157,7 @@
 		// -- .names() --
 		
 		deepEqual( ET.names(), ["t1","t2"], 'names - default');
-		deepEqual( ET.names('helper'), ["set", "if", "|", "h1", "menor"], 'names - helpers');
+		deepEqual( ET.names('helper'), ["set", "if", "|", "|set", "trim", "h1", "menor"], 'names - helpers');
 		
 		// -- "|" helper --
 		
@@ -186,7 +186,6 @@
 		equal( ET.express(scr, { v: [ {val:111}, {val:222} ] } ), '111222', 'if helper c/array de objects');
 
 		scr = '{{set $x "hola"}}{{#if !!($x && b.c.trim()===(($x)) && true && b.c.trim( ).trim().length==4 &&($y|| b.c.x|| $x)) }}OK{{else}}NOO{{end}}';
-		//scr = '{{#if b.c.trim().trim().length}}OK{{end}}'
 		equal( ET.express(scr, { b:{c:'hola  '} } ), 'OK', 'if helper - complex condition & native function');
 
 		// -- set helper --
@@ -201,7 +200,7 @@
 		equal( ET.render('t1', {}), '', 'ERROR: set 2' );
 		equal( ET.error, '[ template: t1 ] invalid var in "set": "ab"', 'ERROR: set, comenzar c/ $' );
 	
-		scr = '{{ set $a }}{{ set $b="x" "y"}}{{ set $c = ccc }}{{ set $d "hola"}}{{ set $e "buen" " dia"}}{{$a}}{{$b}}{{$c}}{{$d}}{{$e}}';
+		scr = '{{ set $a "ZZ"}}{{ set $a }}{{ set $b="x" "y"}}{{ set $c = ccc }}{{ set $d "hola"}}{{ set $e "buen" " dia"}}{{$a}}{{$b}}{{$c}}{{$d}}{{$e}}';
 		ET.add('t1', scr);
 		equal( ET.render('t1', {ccc: 123}), 'xy123holabuen dia', 'set' );
 
@@ -225,14 +224,33 @@
 		ET.add('t1', scr);
 		equal( ET.render('t1', {}), ' Y XX X  ', 'set helper 5' );
 		
-		scr = '{{#t}}{{t}}:{{#a}}{{b}}{{t}}{{end}}{{end}}';
+		scr = '{{set $v v}}{{#$v}}{{%content}}{{else}}NOO{{end}}';
+		equal( ET.express(scr, { v: ['x', 'y'] } ), 'xy', 'set helper asignar object/array');
+
+		// -- |set helper --
+		
+		scr = '{{|set $v a}}{{$v}}';
+		equal( ET.express(scr, { a: 'Ups' } ), 'Ups', 'bar |set helper asignar');
+
+		scr = '{{|set $v none a}}{{$v}}';
+		equal( ET.express(scr, { a: 'Ups2' } ), 'Ups2', 'bar |set helper asignar +');
+
+		scr = '{{#|set $v xxx}}{{a}}{{end}}{{$v}}';
+		equal( ET.express(scr, { a: 'Ups3' } ), 'Ups3', 'bar |set helper asignar inv');
+
+		scr = '{{set $v "hola"}}{{|set $v none}}{{$v}}';
+		equal( ET.express(scr, {} ), '', 'bar |set helper asignar vacio si no se logró otra asignación');
+
+		// -- mas --
+		
+		scr = '{{#t}}{{t}}:{{#a}}{{b}}{{.t}}{{end}}{{end}}';
 		ET.add('t1', scr);
 		equal( ET.render('t1', { t: true, a: {b:'hola!'} } ), 'true:hola!true', 'child & parent scope' );
 		
-		scr = '{{#t}}{{t}}:{{#a}}{{b}}{{a.b}}{{t}}{{end }}{{end}}';
+		scr = '{{#t}}{{t}}:{{#a}}{{b}}{{.a.b}}{{.t}}{{end }}{{end}}';
 		equal( ET.express(scr, { t: true, a: {b:'hola!'} } ), 'true:hola!hola!true', 'child & parent scope recursivo - w/express' );
 
-		scr = '{{^t}}{{^n}}Saludos: {{#a}}{{b}}{{a.b}}{{end}}{{ end }}{{end}}';
+		scr = '{{^t}}{{^n}}Saludos: {{#a}}{{b}}{{.a.b}}{{end}}{{ end }}{{end}}';
 		equal( ET.express(scr, { t: false, a: {b:'hola!'} } ), 'Saludos: hola!hola!', 'inverse block child & parent scope' );
 		
 		scr = '[[#t]][[a.b]][[else]]/*  comentarios!!  */NO[[end]]';
@@ -270,7 +288,7 @@
 		ET.reset();
 		ET.overwrite = true;
 		
-		equal($.TExpreso.getStatsInfo(), $.TExpreso.ME+' >> templates: (no), helpers: 3 [set, if, |]', 'nada en getStatsInfo');
+		equal($.TExpreso.getStatsInfo(), $.TExpreso.ME+' >> templates: (no), helpers: 5 [set, if, |, |set, trim]', 'nada en getStatsInfo');
 		
 		var tpls=[], interceptor = function(n,c){ tpls.push(n); return c; };   // n = template name, c = contenido
 		
@@ -289,7 +307,7 @@
 		
 		$.TExpreso.addFromUrl('files/tests_TExpreso-partials.html', function(cant){
 			equal(cant,2, 'url');
-			equal($.TExpreso.getStatsInfo(), $.TExpreso.ME+' >> templates: 3 [tpl-1, tpl-2, remote-tpl], helpers: 4 [set, if, |, entreCorchetes]', 'url & getStatsInfo');
+			equal($.TExpreso.getStatsInfo(), $.TExpreso.ME+' >> templates: 3 [tpl-1, tpl-2, remote-tpl], helpers: 6 [set, if, |, |set, trim, entreCorchetes]', 'url & getStatsInfo');
 			equal(ET.express( "remote-tpl", {} ).trim(), 'Result: [--(esto fue cargado desde un url)--]', 'render del remote' );
 			
 			$.TExpreso.addFromUrl('files/tests_TExpreso-partials.html', function(cant){
@@ -344,7 +362,7 @@ function logScript(node, ind, reIndent) {		// para usarlo en test
 		Nooooooo ERRORRRRR 1!!  /* comentario 1 */
 	{{else }}
 		Si...<br>
-		{{ # if  rows.length == 3 }}
+		{{# if  rows.length == 3 }}
 			{{set $x "vive en"}}
 		{{else}}	
 /* comentario 2 */ {{set $x "no vive en"}}
@@ -378,7 +396,7 @@ function logScript(node, ind, reIndent) {		// para usarlo en test
 </script>
 
 <script id="tpl-2" type="text/html">
-	{{%row}}) {{#if nombre.length==1}}{{nombre}}.{{else}}{{nombre}}{{end}} {{ apellido   }}, {{ $x }} {{ lugar }} <br>
+	{{%row}}) {{#if nombre.length==1}}{{nombre}}.{{else}}{{nombre}}{{end}} {{ apellido }}, {{ $x }} {{ .lugar }} <br>
 	{{set $f 0}}
 </script>
 

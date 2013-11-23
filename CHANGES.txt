@@ -1,3 +1,16 @@
+2013-11-22:	v 1.3
+
+	* :	Desde ahora no es automática la obtención de una propiedad en los parent objects del scope, salvo que esté
+		precedida por un punto (ej: " .myVar ").
+
+	+ :	Se agrega builtin helper "|set" {{|set key a b ..}} ó {{#|set key a b ..}} xx {{end}}
+		Asigna el primer arg c/valor "imprimible" o vacío en contrario. 
+		En caso de bloque (#) asigna su contenido subyacente (xx) en caso que ningun args (a, b, ..) sea asignable. 
+		|set es equivalente a: {{#set key}}{{| a, b, ..}}{{else}}xx{{end}}.
+
+	+ :	Se agrega builtin helper "trim" {{#trim}} xx {{end}}, que análogo al método de String (javascript) elimina
+		los espacios y saltos al contenido subyacente (xx) del bloque.
+
 2013-11-15:	v 1.2
 
 	* :	Al iterar sobre arrays, además de los builtins %row e %index, si el item NO es typeof object, 
