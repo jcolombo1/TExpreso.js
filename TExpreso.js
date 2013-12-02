@@ -5,7 +5,7 @@
 * 	Requiere : nada :)
 *
 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*  Copyright © 2013 Jorge Colombo (Buenos Aires, Argentina); 
+*  Copyright ¬© 2013 Jorge Colombo (Buenos Aires, Argentina); 
 *  Licensed MIT 
 *
 *  contacto: jcolombo@ymail.com
@@ -18,7 +18,7 @@
 	function TExpreso() { 
 
 		var self 	= this,
-			VERSION	= '1.3',
+			VERSION	= '1.4',
 			rexp 	= { DBEG: '\\{\\{', DEND: '\\}\\}' },
 			cache, MEM, rexpHlps;	
 	
@@ -53,7 +53,7 @@
 			if (cache.tpl[tname] && !(overwrite||self.overwrite)) { console.info('try overwrite template: '+tname); return false;};
 			self.tname = tname; self.error = '';  //actual template, reset error
 			var tpl = typeof addInterceptor==='function' ? _parse( addInterceptor(tname,str) ) : _parse(str);
-			if (tpl) cache.tpl[tname] = tpl; else if (cache.tpl[tname]) cache.tpl[tname] = undefined;  // (si ya existÌa set undefined si parser error)
+			if (tpl) cache.tpl[tname] = tpl; else if (cache.tpl[tname]) cache.tpl[tname] = undefined;  // (si ya exist√≠a set undefined si parser error)
 			return tpl;
 		};
 		
@@ -64,10 +64,10 @@
 		 * .addHelper( name , fn [, overwrite] )			Returns: no
 		 *		Regista la function para ser usada en los templates
 		 *
-		 * @param name		name asociado con el que se registra y ser· usado en los templates
+		 * @param name		name asociado con el que se registra y ser√° usado en los templates
 		 * @param fn		function
 		 * @param overwrite	sobrescribirlo si ya estuviese registrado
-		 * @param rexpp  	regex especial a aplicar en parseo de sus par·metros (ver ejemplo en "if")
+		 * @param rexpp  	regex especial a aplicar en parseo de sus par√°metros (ver ejemplo en "if")
 		*/
 		this.addHelper = function(name, fn, overwrite, rexpp) {
 			var rv; self.tname = name; self.error = '';  //actual template, reset error
@@ -110,8 +110,8 @@
 		 * .express( sourceTemplate, scope )			Returns: string-html renderizado
 		 *		Renderiza el template suministado en string "sourceTemplate" (supone uso del return)
 		 *
-		 * @param sourceId			tag id del contenedor <script> del template (id ser· adem·s el template name). 
-		 * @param targetId			tag id donde renderizar el template (sobrescribir· todo el contenido html).
+		 * @param sourceId			tag id del contenedor <script> del template (id ser√° adem√°s el template name). 
+		 * @param targetId			tag id donde renderizar el template (sobrescribir√° todo el contenido html).
 		 * @param scope				data model a renderizar.
 		 * @param sourceTemplate	contenido template
 		 *					 
@@ -125,7 +125,7 @@
 			return rv;
 		};
 
-		/** SÛlo para usar con tests */
+		/** S√≥lo para usar con tests */
 		this.get = function(tname) { return cache.tpl[tname]; };
 
 		/**
@@ -134,7 +134,7 @@
 		 * .has( tname [, ttype] )			Returns: boolean
 		 *
 		 * @param tname		name asociado con el que se registra
-		 * @param ttype		string con 'template' Û 'helper' (default: 'template')
+		 * @param ttype		string con 'template' √≥ 'helper' (default: 'template')
 		*/
 		this.has = function(tname, ttype) { return (( ttype=='helper' ? cache.hlp[tname] : cache.tpl[tname] ) ? true : false ); };
 
@@ -143,7 +143,7 @@
 		 *
 		 * .names( [ ttype ] )			Returns: array[string]
 		 *
-		 * @param ttype		string con 'template' Û 'helper' (default: 'template')
+		 * @param ttype		string con 'template' √≥ 'helper' (default: 'template')
 		*/
 		this.names = function(ttype) { 
 			var rv = [], obj = ttype=='helper' ? cache.hlp : cache.tpl;
@@ -152,11 +152,11 @@
 		};
 
 		/**
-		 * Cambiar delimitador entre los posibles: {{ }}, [[ ]] Û (( )).
+		 * Cambiar delimitador entre los posibles: {{ }}, [[ ]] √≥ (( )).
 		 *
 		 * .delimiter( [ s ] )			Returns: no
 		 *
-		 * @param s		string indicando: '{' Û '[' Û '(' (default: '{')
+		 * @param s		string indicando: '{' √≥ '[' √≥ '(' (default: '{')
 		*/
 		this.delimiter = function(s) {
 			if ( s=='[' || s==']' ) { rexp.DBEG = '\\[\\['; rexp.DEND = '\\]\\]'; } else if ( s=='(' || s==')' ) { rexp.DBEG = '\\(\\('; rexp.DEND = '\\)\\)'; } else { rexp.DBEG = '\\{\\{'; rexp.DEND = '\\}\\}'; };
@@ -296,8 +296,8 @@
 
 		/**
 		 * Retorna el valor o contenido de una variable obtenida desde el object-scope suministrado.
-		 * En caso de no existir la var Û prop en el actual scope y si se indicÛ precedida con punto (.) 
-		 * se intentar· ubicarla en los parents scopes (ej: " .myVar ").
+		 * En caso de no existir la var √≥ prop en el actual scope y si se indic√≥ precedida con punto (.) 
+		 * se intentar√° ubicarla en los parents scopes (ej: " .myVar ").
 		 *
 		 * ._get( o, p )			Returns: valor
 		 *
@@ -309,7 +309,7 @@
 			try{ 
 				if (p=='true') r = true;										//true
 				else if (/^["'].+["']$/.test(p)) r = p.substring(1,p.length-1); //literal
-				else if (/^\d+\.?\d*$/.test(p)) r = p;							//dÌgitos
+				else if (/^\d+\.?\d*$/.test(p)) r = p;							//d√≠gitos
 				else if (/^\.?[%\$\w][\w\.\$]*$/.test(p)) {						//en objs
 					try {
 						r = mem = p.charAt(0)=='$' ? MEM : o, s = p.charAt(0)=='.' ? p.slice(1).split('.') : p.split('.'); 

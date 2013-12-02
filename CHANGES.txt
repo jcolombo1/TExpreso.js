@@ -1,3 +1,7 @@
+2013-12-02:	v 1.4
+
+	* :	Correcciones menores. Conversion a UTF-8 de los files.
+
 2013-11-22:	v 1.3
 
 	* :	Desde ahora no es automática la obtención de una propiedad en los parent objects del scope, salvo que esté

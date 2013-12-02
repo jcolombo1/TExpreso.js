@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+Ôªø <!DOCTYPE html>
 <html>
  <head>
 <title>TEST TExpreso Template Engine</title>
@@ -50,7 +50,7 @@
 		deepEqual( logScript( ET.get('t2', {test:true} )), scr, 'big template!! add / get - '+big.length+' bytes' );
 		equal( ET.error, '', 'not ERROR' );
 
-		deepEqual( logScript( ET.get('t1', {test:true} )), scr, 'get del previo'); // aun est· t1?
+		deepEqual( logScript( ET.get('t1', {test:true} )), scr, 'get del previo'); // aun est√° t1?
 
 		scr = 'aaa{{b }}ccc';		///////// t2 /////////
 		ET.add('t2', scr);
@@ -239,7 +239,7 @@
 		equal( ET.express(scr, { a: 'Ups3' } ), 'Ups3', 'bar |set helper asignar inv');
 
 		scr = '{{set $v "hola"}}{{|set $v none}}{{$v}}';
-		equal( ET.express(scr, {} ), '', 'bar |set helper asignar vacio si no se logrÛ otra asignaciÛn');
+		equal( ET.express(scr, {} ), '', 'bar |set helper asignar vacio si no se logr√≥ otra asignaci√≥n');
 
 		// -- mas --
 		
@@ -272,7 +272,7 @@
 		equal( view.textContent.replace(/[\n\t]+/g,''), 'Si...1) Jorge Colombo, vive en Los Polvorines 2) Lucas Colombo, vive en Los Polvorines 3) Mauro Colombo, vive en Los Polvorines Hay 3 personas en Los Polvorines (vive en) !Todo Ok...', 'multilinea tpl 2 - w/express' );
 	
 	
-		$(lapso).append('<br>... 1 TardÛ : '+ (new Date()-clk) +' ms.');
+		$(lapso).append('<br>... 1 Tard√≥ : '+ (new Date()-clk) +' ms.');
 		
 
 	});
@@ -317,7 +317,7 @@
 		
 		start(); 
 		
-		$(lapso).append('<br>... 2 TardÛ : '+ (new Date()-clk) +' ms.');
+		$(lapso).append('<br>... 2 Tard√≥ : '+ (new Date()-clk) +' ms.');
 		$('#view').html('');
 	});
 	

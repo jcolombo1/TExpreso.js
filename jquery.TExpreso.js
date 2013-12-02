@@ -7,7 +7,7 @@
 *		TExpreso - 1.0+
 *
 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*  Copyright © 2013 Jorge Colombo (Buenos Aires, Argentina); 
+*  Copyright ¬© 2013 Jorge Colombo (Buenos Aires, Argentina); 
 *  Licensed MIT 
 *
 *  contacto: jcolombo@ymail.com
@@ -58,10 +58,10 @@
 	};
 	
 	/**  
-	* Cargar el archivo de url suministrado y agregar todos los templates y/o helpers ubicados en Èl.
-	* Los archivos pueden contener uno o m·s templates de la forma <script type="text/html" id="miTemplate">...</script>
-	* Si el <script> indica attr: data-te-name='xxxxx' se tomar· su valor como nombre del template/helper.
-	* Si el <script> indica attr: data-te-type='helper' se tomar· su contenido como helper (debe ser function anonima).
+	* Cargar el archivo de url suministrado y agregar todos los templates y/o helpers ubicados en √©l.
+	* Los archivos pueden contener uno o m√°s templates de la forma <script type="text/html" id="miTemplate">...</script>
+	* Si el <script> indica attr: data-te-name='xxxxx' se tomar√° su valor como nombre del template/helper.
+	* Si el <script> indica attr: data-te-type='helper' se tomar√° su contenido como helper (debe ser function anonima).
 	*/
 	function addFromUrl(url, doit, overwrite) {
 		if (!url || ( !overwrite && hasUrl(url))) { // antes ver si ya fue cargado el url
@@ -76,7 +76,7 @@
 					var rv=false, id = $(el).attr(ATTR_TPL_NAME), ttype = $(el).attr(ATTR_TPL_TYPE);
 					if (ttype=='helper') rv = getTExpreso().addHelper( (id?id:el.id), eval($(el).html()), overwrite );
 					else rv = getTExpreso().add( (id?id:el.id), $(el).html(), overwrite, options.addInterceptor );
-					if (rv) cant++;	// rv indica si TExpreso efectuÛ el add
+					if (rv) cant++;	// rv indica si TExpreso efectu√≥ el add
 				});
 			}).always(function() {
 				urls.push(url);
@@ -107,7 +107,7 @@
 			}
 		};
 		
-		// si se indicÛ param 'id' solo registrar ese, sino todos los ubicados en el DOM
+		// si se indic√≥ param 'id' solo registrar ese, sino todos los ubicados en el DOM
 		var cant = 0, ids = id ? [ id ] : $('script[type="'+options.templateType+'"]').map( function () { _normalize(this); return this.id; } );
 
 		$.each(ids, function() {
@@ -116,7 +116,7 @@
             else {
 				if ( $(el).attr(ATTR_TPL_TYPE) == 'helper') rv = getTExpreso().addHelper( this, eval($(el).html()) );
 				else rv = getTExpreso().add( this, $(el).html(), false, options.addInterceptor );
-				if (rv) cant++;	// rv indica si TExpreso efectuÛ el add
+				if (rv) cant++;	// rv indica si TExpreso efectu√≥ el add
             }
 		});
 		
@@ -154,6 +154,6 @@
 			$(this).html( inst.render( tpl, data, retainMem ) ); 
 		});
 	};
-	$.fn.TExpreso = $.fn.texpreso;  // sinonimo en minusc
+	$.fn.TExpreso = $.fn.texpreso;  // sinonimos
 	
 }(jQuery, window));
