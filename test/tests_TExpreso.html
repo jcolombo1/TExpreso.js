@@ -241,6 +241,9 @@
 		scr = '{{set $v "hola"}}{{|set $v none}}{{$v}}';
 		equal( ET.express(scr, {} ), '', 'bar |set helper asignar vacio si no se logró otra asignación');
 
+		scr = '{{#x}}{{|set $a t2 .t}}{{#if $a == true}}OK{{end}}{{#if $a}}OK2{{end}}{{end}}';
+		equal( ET.express(scr, { t: true, x:{ t2: false } } ), 'OKOK2', '|set & if, desde parent scope');
+		
 		// -- mas --
 		
 		scr = '{{#t}}{{t}}:{{#a}}{{b}}{{.t}}{{end}}{{end}}';

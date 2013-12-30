@@ -226,6 +226,15 @@
 		function _rmvcms(str) { return str.replace(/\/+\*.+?\*\//g,''); };
 		
 		function _doScope(loc, parent) {
+			/** @TODO Posible bug: caso del "padre salteado", debería ser arreglado? */
+			/* ATENCION: el parent scope es seteado tal cual se recibe, por lo que puede inducir a un "error de interpretacion",
+			*			 dado que el parent recibido podría NO ser el "parent real", ejemplo:
+			*			 si el scope es: { a: { x: true, b: { c: true } } } 
+			*			 caso-1) si template es: {{#a.b}} {{.x}} ...aqui el parent '..' es 'scope' en vez de 'a'... {{end}}
+			*			 caso-2) si template es: {{#a}}{{#b}} {{.x}} ...aqui el parent '..' es lo esperado, o sea 'a'... {{end}}{{end}}
+			*			 En el caso-1, {{.x}} es undefined (no encontrado!)
+			*			 En el caso-2, {{.x}} es true
+			*/
 			if (typeof parent==='object' && loc!==parent) loc['..'] = parent;
 			return loc;
 		};
@@ -349,6 +358,7 @@
 		function _h_if(options) {
 			//forma: {{#if <conditions> }} .. [ {{else}} .. ] {{end}}
 			//CUIDADO: "if" no recorre ascendencia para obtener el valor de un objeto (como lo hace _get())
+			// 			en su lugar use helper {{set $xx ...}} o {{|set $xx ...}} , y luego: {{#if $xx}}...
 			var v;
 			if (typeof options.T!=='function') { options._error('invalid "if" (should be #if)'); return''; };
 			var rx = /[%\$a-z\.][\w\.\$]*|["'][^"]+?["']/ig;
