@@ -403,8 +403,8 @@
 			// forma: {{#trim}}...{{end}} 
 			var rv = '';
 			if (typeof options.T=='function') rv = options.T(options.s);
-			else if (options.E) options._error('invalid spare "else" in trim helper');
-			else options._error('invalid trim helper');
+			else if (options.E) options._error('invalid "else" in trim helper');
+			else options._error('invalid "trim" helper');
 			return rv ? (rv+'').trim() : '';
 		};
 		
