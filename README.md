@@ -30,7 +30,7 @@ var datos = { nombre: "Jorge", saludo: "Buenos días" };
 ```html
 <!-- Template -->
 
-<div class='personsClass'>
+<div>
   {{# if persons.length > 0 }}
   
 	<ul>
@@ -57,7 +57,7 @@ var myContext = {
 ```
   *el resultado será:*<br>
 ```html
-<div class='personsClass'>
+<div>
   <ul>
       <li> <b>Jorge Colombo</b> vive en Los Polvorines </li> 
       <li> <b>Patry Gutierrez</b> vive en Los Polvorines </li> 
@@ -71,7 +71,7 @@ var myContext = { persons: [] };
 ```
   *el resultado será entonces:*<br>
 ```html
-<div class='personsClass'>
+<div>
   <p>No hay personas!</p>
 </div>
 ```
