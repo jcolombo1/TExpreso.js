@@ -16,6 +16,11 @@
 			<h3>Caso 1:</h3> <div id="ej-2-1"></div> 
 			<h3>Caso 2:</h3> <div id="ej-2-2"></div> 
 		</li>	
+		<li>
+			<h2>Ejemplo 3</h2>
+			<h3>Caso 1:</h3> <div id="ej-3-1"></div> 
+			<h3>Caso 2:</h3> <div id="ej-3-2"></div> 
+		</li>	
 		</ul>
 		<div id="lapso"></div> 
 
@@ -73,6 +78,31 @@ $(document).ready( function() {
 	
 	$('#ej-2-2').texpreso( 'template-2', datos );
 
+
+	// EJEMPLO 3
+	// =========
+	
+	// definir contexto de datos del ej 3 caso 1
+	
+	datos = {
+		persons: [
+			{ firstName: 'Jorge', lastName: 'Colombo', address: { city: 'Los Polvorines', province: 'BA' }  },
+			{ firstName: 'Patry', lastName: 'Gutiérrez', address: { city: 'Los Polvorines', province: 'BA' }  },
+		]
+	};
+	
+	// renderizar en div#ej-3-1
+	
+	$('#ej-3-1').texpreso( 'template-3', datos );
+
+	// definir contexto de datos del ej 3 caso 2
+	
+	datos = { persons: [] };
+	
+	// renderizar en div#ej-3-2
+	
+	$('#ej-3-2').texpreso( 'template-3', datos );
+
 	
 	// ... cuanto tardó ?
 	
@@ -100,6 +130,16 @@ $(document).ready( function() {
 {{ else }}
 	<p>No hay personas!</p>
 {{ end }}
+</script>
+
+<script id="template-3" type="text/html">
+	<ul>
+	{{#persons}}
+		<li><b>{{firstName}} {{lastName}}</b> vive en {{address.city}}</li> 
+    {{ else }}
+	   <li>No hay personas!</li>
+	{{end}}  
+	</ul>
 </script>
 
 	</body>

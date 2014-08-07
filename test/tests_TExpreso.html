@@ -87,6 +87,14 @@
 		ET.add('t1', scr);
 		equal( ET.render('t1', {list: [{b:'A'},{b:'B'},{b:'C'}]}), '000aaaAcccaaaBcccaaaCccc111', 'rend block s/ list scope & partial' );
 
+		scr = '000{{#list}} hay registros {{else}} sin registros {{end}}111';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {list: []}), '000 sin registros 111', 'rend block s/ list vacia []' );
+
+		scr = '000{{#list}} hay registros {{else}} sin registros {{end}}111';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {}), '000 sin registros 111', 'rend block s/ object undefined' );
+
 		scr = '000{{#object}}{{ > t2 }}{{end}}111';
 		ET.add('t1', scr);
 		equal( ET.render('t1', {object: {b:'UPA!'}}), '000aaaUPA!ccc111', 'rend block s/ object scope & partial' );
@@ -150,9 +158,12 @@
 		// -- .has() --
 
 		equal( ET.has('no-existe'), false, 'has - false');
-		equal( ET.has('t1'), true, 'has - default');
-		equal( ET.has('t2', 'template'), true, 'has - template');
+		equal( ET.has('t1'), true, 'has default');
+		equal( ET.has('t2', 'template'), true, 'has template');
+		equal( ET.has('t2', 'helper'), false, 'has bad helper false');
+		equal( ET.has('t2', 'sarasa'), false, 'has bad sarasa false');
 		equal( ET.has('menor', 'helper') && ET.has('h1', 'helper'), true, 'has - helpers');
+		equal( ET.has('menor', 'template'), false, 'has bad template false');
 
 		// -- .names() --
 		

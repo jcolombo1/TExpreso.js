@@ -25,7 +25,7 @@
 		ATTR_TPL_TYPE = 'data-te-type',
 		options = {
 			addInterceptor: null,		// Nota: debe ser prototipeada como: function addInterceptor( tname, html ) y DEBE RETORNAR el html ya sea adaptado o no. 
-			templateType: 'text/html',	// El attrib 'type' para denotar que el contenido es un partial template en el DOM, ej: <script type="text/html" id="miTemplate"></script>
+			templateType: 'text/html',	// El attrib 'type' para denotar que el contenido es un partial template en el DOM, ej: <script type="text/html" id="miTemplate">....</script>
 		};
 
 	function getTExpreso() { 

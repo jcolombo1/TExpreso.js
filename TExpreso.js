@@ -9,6 +9,10 @@
 *  Licensed MIT 
 *
 *  contacto: jcolombo@ymail.com
+*
+* 2014-08-06
+*   - ahora .has() solo permite que param ttype sea uno de: template | helper | undefined
+*
 * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
@@ -136,8 +140,8 @@
 		 * @param tname		name asociado con el que se registra
 		 * @param ttype		string con 'template' ó 'helper' (default: 'template')
 		*/
-		this.has = function(tname, ttype) { return (( ttype=='helper' ? cache.hlp[tname] : cache.tpl[tname] ) ? true : false ); };
-
+		this.has = function(tname, ttype) { return ( ( (ttype=='template'||!ttype) && cache.tpl[tname] ) || ( ttype=='helper' && cache.hlp[tname] ) ? true : false ); };
+		
 		/**
 		 * Retorna array de names de templates registrados (template o helper).
 		 *
