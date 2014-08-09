@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="TExpreso : Liviano y veloz renderizador de contenidos a través de plantillas (templates) similar a Handlebars y Mustache. Aunque adiciona &quot;variables&quot; y otras mejoras para facilitar su uso.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/jquery.snippet.min.css">
+
+    <title>TExpreso</title>
+    
+    <style type="text/css"> 
+    	pre { font-size: 13px; padding: 10px; }
+    	pre li { line-height: 1.5em; } 
+    </style>
+    
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/jcolombo1/TExpreso.js">View on GitHub</a>
+
+          <h1 id="project_title">TExpreso</h1>
+          <h2 id="project_tagline">Liviano y veloz renderizador de contenidos a través de plantillas (templates), similar a Handlebars y Mustache, aunque adiciona variables-runtime y otras mejoras para facilitar su uso.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/jcolombo1/TExpreso.js/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/jcolombo1/TExpreso.js/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+<!--         <h1><a name="texpreso" class="anchor" href="#texpreso"><span class="octicon octicon-link"></span></a>TExpreso</h1> -->
+
+<p>A diferencia de <strong>Handlebars</strong> y <strong>Mustache</strong>, cuenta con variables en runtime, estructuras "<code>if..else..end</code>", 
+   además de auto-path del contexto de datos y bloques auto-condicionales y auto-iterativos.
+   Es súmamente simple de usar y al igual que Handlebars permite embeber funciones "helpers" en runtime.</p>
+
+<p>Incluye un plugin de jQuery (jquery.TExpreso.js) que facilita tanto la carga de archivos de templates y/o helpers externos, 
+   como también su renderización dentro de elementos del DOM.</p>
+
+<p>Veamos un par de ejemplos de <b>templates</b> y <b>datos</b> para entender su funcionalidad...</p>
+
+<p><em><strong>Nota</strong>: Estos ejemplos están contenidos en el archivo "example.html" (obsérvelos en su explorador).</em></p>
+
+
+
+
+<h3> Ejemplo 1: </h3>
+
+<p><em>Si a este pequeño template:</em><br/></p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle">
+&lt;p&gt; {{saludo}} {{nombre}}! &lt;/p&gt;</pre>
+</div>
+
+<p><em>lo renderizamos con el siguiente contexto de datos:</em></p>
+
+<div class="highlight highlight-html"><pre class="jsStyle">var datos = { nombre: "Jorge", saludo: "Buenos días" };</pre></div>
+
+<p><em>... el resultado será:</em><br/></p>
+
+<div class="highlight highlight-html" id="resultado"></div>
+
+<br/>
+<form>Valor de "nombre": <input type="text" id="nombre" name="nombre" value="Jorge"/> <input type="submit" id="boton" value=" Interpretar !" /></form> 
+<br/>
+
+<p>
+Las expresiones encerradas entre <code>{{ expresión }}</code> son los elementos a interpretar por el motor de plantillas <strong>TExpreso</strong>. 
+Usted las puede utilizar para declarar variables que expresen sus valores, o invocar funciones (helpers) que actúen o expresen valores en función de condiciones.
+</p>
+<p>
+Como se observa en el ejemplo 1, tanto <code>{{nombre}}</code> como <code>{{saludo}}</code>, son "variables", que al ser interpretadas por <strong>TExpreso</strong> con 
+los datos suministrados, genera el HTML resultante con el saludo.
+</p>
+<p>
+Si aún no lo hizo le propongo que ingrese su nombre y pulse el botón "Interpretar" ahora.
+</p>
+
+  
+<br/>
+<h3> Ejemplo 2: </h3>
+
+<p><em>Si a este template algo mas complejo (ya que posee <strong>bloques</strong>):</em><br/></p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle">
+&lt;div&gt;
+	{{# if persons.length &gt; 0 }}
+		&lt;ul&gt;
+		{{# persons }}
+	    	&lt;li&gt; &lt;b&gt;{{firstName}} {{lastName}}&lt;/b&gt; vive en {{address.city}} &lt;/li&gt; 
+		{{ end }}  
+	    &lt;/ul&gt;
+		&lt;p&gt;Hay {{persons.length}} personas&lt;/p&gt;
+	{{ else }}
+		&lt;p&gt;No hay personas en la lista!&lt;/p&gt;
+	{{ end }}  
+&lt;/div&gt;</pre>
+</div>
+
+<p><em>lo renderizamos con el siguiente contexto de datos:</em></p>
+
+<div class="highlight highlight-html"><pre class="jsStyle">var myContext = {
+  persons: [
+    { firstName: 'Juan', lastName: 'Fulano', address: { city: 'Polvorines', province: 'BA' }  },
+    { firstName: 'Ana', lastName: 'Sultano', address: { city: 'Sourdeaux', province: 'BA' }  },
+  ]
+};</pre>
+</div>
+
+<p><em>... el resultado HTML será:</em><br/></p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle2">
+&lt;div&gt;
+  &lt;ul&gt;
+      &lt;li&gt; &lt;b&gt;Juan Fulano&lt;/b&gt; vive en Polvorines &lt;/li&gt; 
+      &lt;li&gt; &lt;b&gt;Ana Sultano&lt;/b&gt; vive en Sourdeaux &lt;/li&gt; 
+  &lt;/ul&gt;
+  &lt;p&gt;Hay 2 personas&lt;/p&gt;
+&lt;/div&gt;</pre>
+</div>
+
+	
+<p><em>Pero... si lo renderizamos con este otro contexto de datos:</em></p>
+
+<div class="highlight highlight-html"><pre class="jsStyle">
+var myContext = { persons: [] };  // "persons" no contiene elementos </pre>
+</div>
+
+
+<p><em>... el resultado será entonces:</em><br/></p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle2">
+&lt;div&gt;
+	&lt;p&gt;No hay personas!&lt;/p&gt;
+&lt;/div&gt;</pre>
+</div>
+
+
+</section>
+</div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">TExpreso maintained by <a href="https://github.com/jcolombo1">jcolombo1</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+ 	<script type="text/javascript" src="javascripts/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="javascripts/jquery.snippet.js"></script>
+	<script type="text/javascript" src="javascripts/TExpreso.min.js"></script>
+	<script type="text/javascript" src="javascripts/jquery.TExpreso.min.js"></script>
+
+
+
+<script type="text/html" id="tpl1">
+<pre class="res">&lt;p&gt; {{saludo}} {{nombre}}! &lt;/p&gt;</pre>
+</script>
+
+  
+<script type="text/javascript">
+$(document).ready( function() {
+	var data = { saludo: "Muy buenos días" };
+	$("#boton").click( function(){ 
+		data.nombre = document.getElementById("nombre").value ;
+		$.TExpreso.addFromDom();
+		$('#resultado').texpreso('tpl1',data);
+		$('#resultado pre').snippet("html",{style:"neon"});
+		return false;
+	});
+
+	$("pre.htmlStyle").snippet("html",{style:"typical"});
+	$("pre.htmlStyle2").snippet("html",{style:"neon"});
+	$("pre.jsStyle").snippet("javascript_dom",{style:"berries-light"});
+	$("pre.javaStyle").snippet("java",{style:"typical"});
+	$("#boton").click();
+});
+</script>
+</body>
+</html>
