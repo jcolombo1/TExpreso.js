@@ -25,8 +25,9 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/jcolombo1/TExpreso.js">View on GitHub</a>
 
+		  <a href="http://jcolombo1.github.io"><img style="float: right; max-width: 20%; margin-top: 5.4em; margin-left: 1em;" src="images/grosso1.jpg" alt=""></a>
           <h1 id="project_title">TExpreso</h1>
-          <h2 id="project_tagline">Liviano y veloz renderizador de contenidos a través de plantillas (templates), similar a Handlebars y Mustache, aunque adiciona variables-runtime y otras mejoras para facilitar su uso.</h2>
+          <h2 id="project_tagline">Liviano y veloz renderizador de contenidos a través de plantillas (templates), similar a Handlebars y Mustache, aunque adiciona variables runtime y otras mejoras para hacerle la vida más facil al "desarrollador front-end" </h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/jcolombo1/TExpreso.js/zipball/master">Download this project as a .zip file</a>
@@ -40,11 +41,12 @@
       <section id="main_content" class="inner">
 <!--         <h1><a name="texpreso" class="anchor" href="#texpreso"><span class="octicon octicon-link"></span></a>TExpreso</h1> -->
 
-<p>A diferencia de <strong>Handlebars</strong> y <strong>Mustache</strong>, cuenta con variables en runtime, estructuras "<code>if..else..end</code>", 
+<p>A diferencia de <a href="http://handlebarsjs.com/" target="_blank">Handlebars</a> y <a href="http://mustache.github.io/" target="_blank">Mustache</a>, 
+   cuenta con variables de runtime, estructuras <em>"if..else..end"</em>, 
    además de auto-path del contexto de datos y bloques auto-condicionales y auto-iterativos.
    Es súmamente simple de usar y al igual que Handlebars permite embeber funciones "helpers" en runtime.</p>
 
-<p>Incluye un plugin de jQuery (jquery.TExpreso.js) que facilita tanto la carga de archivos de templates y/o helpers externos, 
+<p>Incluye un plugin de jQuery (<strong>jquery.TExpreso.js</strong>) que facilita tanto la carga de archivos de templates y/o helpers externos, 
    como también su renderización dentro de elementos del DOM.</p>
 
 <p>Veamos un par de ejemplos de <b>templates</b> y <b>datos</b> para entender su funcionalidad...</p>
@@ -66,35 +68,106 @@
 
 <div class="highlight highlight-html"><pre class="jsStyle">var datos = { nombre: "Jorge", saludo: "Buenos días" };</pre></div>
 
-<p><em>... el resultado será:</em><br/></p>
+<p><em>... el resultado será el siguiente código HTML:</em><br/></p>
 
 <div class="highlight highlight-html" id="resultado"></div>
 
 <br/>
-<form>Valor de "nombre": <input type="text" id="nombre" name="nombre" value="Jorge"/> <input type="submit" id="boton" value=" Interpretar !" /></form> 
-<br/>
+<form>
+	<label for="nombre">Valor de "nombre":</label> 
+	<input type="text" id="nombre" name="nombre" value="Jorge"/> <input type="submit" id="boton" value=" Interpretar !" />
+</form> 
+
 
 <p>
-Las expresiones encerradas entre <code>{{ expresión }}</code> son los elementos a interpretar por el motor de plantillas <strong>TExpreso</strong>. 
-Usted las puede utilizar para declarar variables que expresen sus valores, o invocar funciones (helpers) que actúen o expresen valores en función de condiciones.
+Las expresiones encerradas entre <code>{{  }}</code> son los elementos básicos a interpretar por el motor de plantillas <strong>TExpreso</strong> y que contienen 
+los términos del "lenguaje de plantillas" que usted usará, entre ellos están las funciones helpers y las variables de datos. 
+Por otro lado, todo lo que se encuentre por fuera de estas expresiones no será modificado respecto al código HTML resultante. 
 </p>
 <p>
-Como se observa en el ejemplo 1, tanto <code>{{nombre}}</code> como <code>{{saludo}}</code>, son "variables", que al ser interpretadas por <strong>TExpreso</strong> con 
-los datos suministrados, genera el HTML resultante con el saludo.
+Como se observa en este ejemplo aterior, tanto <code>{{nombre}}</code> como <code>{{saludo}}</code>, son "variables", 
+que al ser interpretadas por <strong>TExpreso</strong> con los datos suministrados, genera el HTML resultante con el saludo. 
+Además note que tanto los tags &lt;p&gt; como el signo de admiración (<em>!</em>) no varían, debido a que no están dentro de expresiones <code>{{  }}</code>.
 </p>
 <p>
-Si aún no lo hizo le propongo que ingrese su nombre y pulse el botón "Interpretar" ahora.
+Si aún no lo hizo le propongo que ingrese ahora su nombre en el pequeño formulario que antecede a esto y pulse el botón "[ Interpretar ! ]", observará el efecto.
 </p>
 
   
 <br/>
-<h3> Ejemplo 2: </h3>
+<h3> Bloques: </h3>
 
-<p><em>Si a este template algo mas complejo (ya que posee <strong>bloques</strong>):</em><br/></p>
+<p>
+Un <strong>bloque</strong> es una estructura contenedora conformada por los marcadores <br/><em>{{# expresion}} ... {{ end }}</em>. De forma genérica 
+se los ve así: 
+</p>
+
+<div class="highlight highlight-html"><pre class="htmlStyleNN">
+{{# expresion}} 
+	...contenido... 
+{{end}}
+</pre></div>
+
+<p>
+Note que los bloques comienzan siempre con <code> {{# }} </code> y concluyen con <code> {{ end }} </code>. 
+</p>
+
+<br/>
+<h3> Bloques iterativos: </h3>
+
+<p>
+Un <strong>bloque iterativo</strong> es un bloque contenedor que itera sobre el <strong>Array</strong> indicado en su expresión y que renderizará el código subyacente
+tantas veces como items contenga ese array. Veamos este ejemplo:
+</p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle">
+{{# persons }}
+	&lt;p&gt;{{firstName}} {{lastName}} vive en {{address.city}} &lt;/p&gt; 
+{{ else }}  
+	&lt;p&gt;no hay personas en la lista!&lt;/p&gt; 
+{{ end }}  
+</pre></div>
+<p>
+Note que en caso que el array no contega items, será el contenido subyacente a <code> {{ else }} </code> el renderizado ...
+<br/>
+
+<p><em>si lo renderizamos con el siguiente contexto de datos:</em></p>
+
+<div class="highlight highlight-html"><pre class="jsStyle">var myContext = {
+  persons: [
+    { firstName: 'Juan', lastName: 'Fulano', address: { city: 'Polvorines', province: 'BA' }  },
+    { firstName: 'Ana', lastName: 'Sultano', address: { city: 'Sourdeaux', province: 'BA' }  },
+  ]
+};</pre>
+</div>
+
+<p><em>... el resultado HTML será:</em><br/></p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle2">
+&lt;p&gt;Juan Fulano vive en Polvorines&lt;/p&gt; 
+&lt;p&gt;Ana Sultano vive en Sourdeaux&lt;/p&gt;
+</pre>
+</div>
+
+<p><em>en cambio, si lo renderizamos con el siguiente contexto de datos:</em></p>
+
+<div class="highlight highlight-html"><pre class="jsStyle">var myContext = { persons: [] };</pre></div>
+
+<p><em>... debido a que el array <strong>persons</strong> está vacío (o nulo/indefinido) se encaminará al <code> {{ else }} </code> :</em><br/></p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle2">&lt;p&gt;no hay personas en la lista!&lt;/p&gt;</pre></div>
+
+
+
+
+
+
+
+<p><em>Si a este template algo más complejo:</em><br/></p>
 
 <div class="highlight highlight-html"><pre class="htmlStyle">
 &lt;div&gt;
-	{{# if persons.length &gt; 0 }}
+	{{# if persons.length &gt; 0}}
 		&lt;ul&gt;
 		{{# persons }}
 	    	&lt;li&gt; &lt;b&gt;{{firstName}} {{lastName}}&lt;/b&gt; vive en {{address.city}} &lt;/li&gt; 
@@ -182,6 +255,7 @@ $(document).ready( function() {
 	});
 
 	$("pre.htmlStyle").snippet("html",{style:"typical"});
+	$("pre.htmlStyleNN").snippet("html",{style:"typical",menu:false,showNum:false});
 	$("pre.htmlStyle2").snippet("html",{style:"neon"});
 	$("pre.jsStyle").snippet("javascript_dom",{style:"berries-light"});
 	$("pre.javaStyle").snippet("java",{style:"typical"});
