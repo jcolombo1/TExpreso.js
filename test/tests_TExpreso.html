@@ -71,6 +71,14 @@
 		ET.add('t1', scr);
 		equal( ET.render('t1', {b:'#'}), '000aaa#ccc111', 'rend c/ partial' );
 
+		scr = 'es {{^boolX}}{{boolX}}{{end}}.';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {boolX: false}), 'es .', 'condicion false y no rend value' );
+
+		scr = 'es {{#boolX}}{{boolX}}{{end}}.';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {boolX: true}), 'es true.', 'condicion true y rend value' );
+
 		scr = '000{{#t}}{{ > t2 }}{{end}}111';
 		ET.add('t1', scr);
 		equal( ET.render('t1', {t: false, b:'#'}), '000111', 'rend block s/false & partial' );
@@ -102,6 +110,10 @@
 		scr = '000{{^object}}{{ > t2 }}{{end}}111';
 		ET.add('t1', scr);
 		equal( ET.render('t1', {object: {b:'UPA!'}}), '000111', 'no rend inv block s/object' );
+
+		scr = '{{^str1}}aaa{{end}}{{^str2}}bbb{{end}}{{^str3}}ccc{{end}}';
+		ET.add('t1', scr);
+		equal( ET.render('t1', {str1: '', str2: null}), 'aaabbbccc', 'block c/strings inv - vacia, indef y nula' );
 
 		scr = '{{valueNO}}{{value0}}{{value1}}';
 		ET.add('t1', scr);

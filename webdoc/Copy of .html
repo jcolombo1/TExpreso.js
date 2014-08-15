@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/jquery.snippet.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/doc.css">
+
+    <title>TExpreso</title>
+    
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          	<h1 id="project_title">TExpreso</h1>
+	        <div class='menu'></div>
+        </header>
+    </div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+<section id="main_content" class="inner">
+      	
+
+
+   <div class="ant-sig"></div> 
+      	
+</section>
+</div>
+
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer"></div>
+
+   
+<script type="text/javascript" src="javascripts/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery.snippet.js"></script>
+<script type="text/javascript" src="javascripts/TExpreso.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery.TExpreso.min.js"></script>
+
+  
+<script type="text/javascript">
+$(document).ready( function() {
+	$.TExpreso.addFromDom();
+	$.TExpreso.addFromUrl('templates.html', function(){ 
+		$('#footer_wrap').texpreso('footer'); // FOOTER C/ COPYRIGHT Y MENU
+		$('div.menu').texpreso('menu'); // MENU SUPERIOR E INFERIOR
+		$('div.ant-sig').texpreso('ant-sig',{class_:'menu', anterior:{ hreff:'blocks0', text:'<< Anterior' }, siguiente:{ hreff:'blocks2', text:'Siguiente >>' }}); // MENU ANTERIOR - SIGUIENTE 
+	});
+
+	$("pre.htmlStyle").snippet("html",{style:"typical"});
+	$("pre.htmlStyleNN").snippet("html",{style:"typical",menu:false,showNum:false});
+	$("pre.htmlStyle2").snippet("html",{style:"neon"});
+	$("pre.jsStyle").snippet("javascript_dom",{style:"berries-light"});
+	$("pre.javaStyle").snippet("java",{style:"typical"});
+});
+</script>
+</body>
+</html>

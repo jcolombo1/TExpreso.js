@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/jquery.snippet.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/doc.css">
+
+    <title>TExpreso</title>
+    
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          	<h1 id="project_title">TExpreso</h1>
+	        <div class='menu'></div>
+        </header>
+    </div>
+
+<!-- MAIN CONTENT -->
+<div id="main_content_wrap" class="outer">
+<section id="main_content" class="inner">
+      	
+<h3> Bloques Condicionales: </h3>
+
+<p><em>Un bloque puede comenzar además con <code>{{^ }}</code> indicando "negación" (condición falsa), lo cual implica que en caso que el array 
+no contenga items, o fuese nulo/indefinido (el array o un objeto), o boolean <strong>false</strong>,  
+entonces se encaminará al contenido de <code>{{^ }}</code>, en caso contrario si el array u objeto contiene datos, lo hará a través 
+de su <code>{{else}}</code>.</em></p>
+
+<p><em>Veamos un ejemplo de estos casos:</em><br/></p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle">
+{{#obj}}
+			/*-- evaluando array */	
+	{{^persons}}
+		&lt;p&gt;No hay personas en la lista!&lt;/p&gt;
+	{{else}}
+		&lt;p&gt;Hay {{persons.length}} personas en la lista!&lt;/p&gt;
+	{{end}}
+	
+			/* evaluando un objeto indefinido */	
+	{{^objetoX}}
+		&lt;p&gt;El objetoX es nulo o indefinido&lt;/p&gt;
+	{{end}}
+		
+			/* evaluando un boolean false */
+	{{^booleanX}}
+		&lt;p&gt;El boolean es FALSO/nulo/indefinido&lt;/p&gt;
+	{{end}}
+		
+			/* evaluando una string vacía */	
+	{{^stringX}}
+		&lt;p&gt;La string es nula, indefinida o vacía&lt;/p&gt;
+	{{else}}	
+		&lt;p&gt;La string contiene: {{stringX}}&lt;/p&gt;
+	{{end}}
+	
+{{end}}	
+</pre>
+</div>
+
+<p><em>si lo renderizamos con los siguientes datos:</em></p>
+
+<div class="highlight highlight-html"><pre class="jsStyle">var myContext = {
+	obj: { 
+		persons: [], 
+		booleanX: false, 
+		stringX: '', 
+	} 
+};</pre>
+</div>
+
+<p><em>... el resultado HTML será:</em><br/></p>
+
+<div class="highlight highlight-html">
+	<pre class="htmlStyle2">
+&lt;p&gt;No hay personas en la lista!&lt;/p&gt;
+  
+&lt;p&gt;El objetoX es nulo o indefinido&lt;/p&gt;
+  
+&lt;p&gt;El boolean es FALSO/nulo/indefinido&lt;/p&gt;
+  
+&lt;p&gt;La string es nula, indefinida o vacía&lt;/p&gt;</pre>
+</div>
+
+<p><em>En cambio, si lo renderizamos con los siguientes datos:</em></p>
+
+<div class="highlight highlight-html">
+	<pre class="jsStyle">
+var myContext = {
+	obj: {
+		persons: [
+		    { firstName: 'Juan' },
+    		{ firstName: 'Ana' },
+		],
+		objetoX: { x: '1' },
+		booleanX: true,
+		stringX: 'Hola' 
+	} 
+};</pre>
+</div>
+
+<p><em>... el resultado HTML será:</em><br/></p>
+
+<div class="highlight highlight-html">
+	<pre class="htmlStyle2">
+&lt;p&gt;Hay 2 personas en la lista!&lt;/p&gt;
+  
+&lt;p&gt;La string contiene: Hola!&lt;/p&gt;
+	</pre>
+</div>
+
+
+
+<h1>????????????????????????????????????????????????????????</h1>
+
+
+
+
+
+<div class="highlight highlight-html"><pre class="htmlStyle">
+&lt;div&gt;
+	{{# if persons.length &gt; 0}}
+		&lt;ul&gt;
+		{{# persons }}
+	    	&lt;li&gt; &lt;b&gt;{{firstName}} {{lastName}}&lt;/b&gt; vive en {{address.city}} &lt;/li&gt; 
+		{{ end }}  
+	    &lt;/ul&gt;
+		&lt;p&gt;Hay {{persons.length}} personas&lt;/p&gt;
+	{{ else }}
+		&lt;p&gt;No hay personas en la lista!&lt;/p&gt;
+	{{ end }}  
+&lt;/div&gt;</pre>
+</div>
+
+<p><em>lo renderizamos con el siguiente contexto de datos:</em></p>
+
+<div class="highlight highlight-html"><pre class="jsStyle">var myContext = {
+  persons: [
+    { firstName: 'Juan', lastName: 'Fulano', address: { city: 'Polvorines', province: 'BA' }  },
+    { firstName: 'Ana', lastName: 'Sultano', address: { city: 'Sourdeaux', province: 'BA' }  },
+  ]
+};</pre>
+</div>
+
+<p><em>... el resultado HTML será:</em><br/></p>
+
+<div class="highlight highlight-html"><pre class="htmlStyle2">
+&lt;div&gt;
+  &lt;ul&gt;
+      &lt;li&gt; &lt;b&gt;Juan Fulano&lt;/b&gt; vive en Polvorines &lt;/li&gt; 
+      &lt;li&gt; &lt;b&gt;Ana Sultano&lt;/b&gt; vive en Sourdeaux &lt;/li&gt; 
+  &lt;/ul&gt;
+  &lt;p&gt;Hay 2 personas&lt;/p&gt;
+&lt;/div&gt;</pre>
+</div>
+
+
+   <div class="ant-sig"></div> 
+      	
+</section>
+</div>
+
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer"> </div>
+
+   
+<script type="text/javascript" src="javascripts/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery.snippet.js"></script>
+<script type="text/javascript" src="javascripts/TExpreso.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery.TExpreso.min.js"></script>
+
+  
+<script type="text/javascript">
+$(document).ready( function() {
+	$.TExpreso.addFromDom();
+	$.TExpreso.addFromUrl('templates.html', function(){ 
+		$('#footer_wrap').texpreso('footer'); // FOOTER C/ COPYRIGHT Y MENU
+		$('div.menu').texpreso('menu'); // MENU SUPERIOR E INFERIOR
+		$('div.ant-sig').texpreso('ant-sig',{class_:'menu', anterior:{ hreff:'blocks1', text:'<< Anterior' }, siguiente:{ hreff:'blocks3', text:'Siguiente >>' }}); // MENU ANTERIOR - SIGUIENTE 
+	});
+
+	$("pre.htmlStyle").snippet("html",{style:"typical"});
+	$("pre.htmlStyleNN").snippet("html",{style:"typical",menu:false,showNum:false});
+	$("pre.htmlStyle2").snippet("html",{style:"neon"});
+	$("pre.jsStyle").snippet("javascript_dom",{style:"berries-light"});
+	$("pre.javaStyle").snippet("java",{style:"typical"});
+});
+</script>
+</body>
+</html>

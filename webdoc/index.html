@@ -8,13 +8,9 @@
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/jquery.snippet.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/doc.css">
 
     <title>TExpreso</title>
-    
-    <style type="text/css"> 
-    	pre { font-size: 13px; padding: 10px; }
-    	pre li { line-height: 1.5em; } 
-    </style>
     
   </head>
 
@@ -25,9 +21,13 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/jcolombo1/TExpreso.js">View on GitHub</a>
 
-		  <a href="http://jcolombo1.github.io"><img style="float: right; max-width: 20%; margin-top: 5.4em; margin-left: 1em;" src="images/grosso1.jpg" alt=""></a>
+		  <a href="http://jcolombo1.github.io"><img style="float: right; margin-top: 5.4em; margin-left: 1em;" src="images/grosso1.jpg" alt=""></a>
           <h1 id="project_title">TExpreso</h1>
-          <h2 id="project_tagline">Liviano y veloz renderizador de contenidos a través de plantillas (templates), similar a Handlebars y Mustache, aunque adiciona variables runtime y otras mejoras para hacerle la vida más facil al "desarrollador front-end" </h2>
+          
+          
+          <h2 id="project_tagline">Liviano y veloz renderizador de contenidos a través de plantillas (templates), similar a Handlebars y Mustache, aunque adiciona variables runtime y otras mejoras para hacerle la vida más facil al desarrollador front-end</h2>
+
+	        <div class='menu'></div>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/jcolombo1/TExpreso.js/zipball/master">Download this project as a .zip file</a>
@@ -46,220 +46,108 @@
    además de auto-path del contexto de datos y bloques auto-condicionales y auto-iterativos.
    Es súmamente simple de usar y al igual que Handlebars permite embeber funciones "helpers" en runtime.</p>
 
-<p>Incluye un plugin de jQuery (<strong>jquery.TExpreso.js</strong>) que facilita tanto la carga de archivos de templates y/o helpers externos, 
+<p>Incluye un plugin de jQuery (<strong>jquery.TExpreso</strong>) que facilita tanto la carga de archivos de templates y/o helpers externos, 
    como también su renderización dentro de elementos del DOM.</p>
 
-<p>Veamos un par de ejemplos de <b>templates</b> y <b>datos</b> para entender su funcionalidad...</p>
+<h3> Sobre este documento </h3>
 
-<p><em><strong>Nota</strong>: Estos ejemplos están contenidos en el archivo "example.html" (obsérvelos en su explorador).</em></p>
+<p>Este documento esta dirigido exclusivamente a profesionales del <strong>desarrollo de software</strong>, y se requiere además tener al menos estos conocimientos previos:</p>
+<ul>
+	<li>sobre <a href="http://www.w3schools.com/html/default.asp" target="_blanck">HTML y DOM</a></li>
+	<li>sobre <a href="https://developer.mozilla.org/es/docs/Web/JavaScript" target="_blanck">JavaScript</a></li>
+	<li>sobre <a href="http://jquery.com/" target="_blanck">JQuery</a> (preferentemente)</li>
+</ul>
+<p>Tanto el contenido de este documento como el software al cual hace referencia y se ofrece gratuitamente, fue realizado si intención de lucro alguno.</p>
+<p>Usted se compromete en leer el archivo "LICENSE" antes de usar este software.<p/>
+
+<p style="font-size: 0.6em;"><strong>DESCARGO DE RESPONSABILIDAD</strong>:<BR/> EL SOFTWARE SE ENTREGA "TAL CUAL ESTÁ", 
+SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A LAS 
+GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIONES LEGALES. EN NINGÚN CASO, LOS AUTORES O 
+TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE NINGUN RECLAMO, DAÑO U OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO TIPO, 
+QUE SURJA DE O EN CONEXION CON EL SOFTWARE O EL USO U OTRAS RELACIONES CON EL SOFTWARE.</p>
 
 
-
-
-<h3> Ejemplo 1: </h3>
-
-<p><em>Si a este pequeño template:</em><br/></p>
-
-<div class="highlight highlight-html"><pre class="htmlStyle">
-&lt;p&gt; {{saludo}} {{nombre}}! &lt;/p&gt;</pre>
-</div>
-
-<p><em>lo renderizamos con el siguiente contexto de datos:</em></p>
-
-<div class="highlight highlight-html"><pre class="jsStyle">var datos = { nombre: "Jorge", saludo: "Buenos días" };</pre></div>
-
-<p><em>... el resultado será el siguiente código HTML:</em><br/></p>
-
-<div class="highlight highlight-html" id="resultado"></div>
-
-<br/>
-<form>
-	<label for="nombre">Valor de "nombre":</label> 
-	<input type="text" id="nombre" name="nombre" value="Jorge"/> <input type="submit" id="boton" value=" Interpretar !" />
-</form> 
-
+<h3> Modo de uso </h3>
 
 <p>
-Las expresiones encerradas entre <code>{{  }}</code> son los elementos básicos a interpretar por el motor de plantillas <strong>TExpreso</strong> y que contienen 
-los términos del "lenguaje de plantillas" que usted usará, entre ellos están las funciones helpers y las variables de datos. 
-Por otro lado, todo lo que se encuentre por fuera de estas expresiones no será modificado respecto al código HTML resultante. 
-</p>
-<p>
-Como se observa en este ejemplo aterior, tanto <code>{{nombre}}</code> como <code>{{saludo}}</code>, son "variables", 
-que al ser interpretadas por <strong>TExpreso</strong> con los datos suministrados, genera el HTML resultante con el saludo. 
-Además note que tanto los tags &lt;p&gt; como el signo de admiración (<em>!</em>) no varían, debido a que no están dentro de expresiones <code>{{  }}</code>.
-</p>
-<p>
-Si aún no lo hizo le propongo que ingrese ahora su nombre en el pequeño formulario que antecede a esto y pulse el botón "[ Interpretar ! ]", observará el efecto.
-</p>
+Hay dos variantes de uso, una es como standalone donde no requiere dependencias, y la otra y más simple, mediante un plugin de 
+<a href="http://jquery.com/" target="_blanck">JQuery</a>. En los ejemplos de este documento se hará uso del plugin 
+dado que facilita mucho la carga de templates desde el DOM o desde URLs, y además el rederizado directo a elementos HTML concretos.</p>
+<p>Si desea conocer el modo standalone <a id="empezar" href="standalone.html">click aquí</a></p>
 
-  
-<br/>
-<h3> Bloques: </h3>
+<h3> Cómo empezar </h3>  
 
-<p>
-Un <strong>bloque</strong> es una estructura contenedora conformada por los marcadores <br/><em>{{# expresion}} ... {{ end }}</em>. De forma genérica 
-se los ve así: 
-</p>
-
+<p>Lo único que se requiere es bajar <strong>TExpreso</strong> desde GitHub, en algunos de los formatos compactos .zip o .tar.gz, desde los links con que
+cuenta arriba, luego extraer la carpeta <strong><em>/learn</em></strong> a su equipo. Allí obtendrá el siguiente esquema de archivos:</p>
 <div class="highlight highlight-html"><pre class="htmlStyleNN">
-{{# expresion}} 
-	...contenido... 
-{{end}}
+<strong>learn</strong>
+	proto.html
+	proto_flickr.html
+	<strong>js</strong>
+		jquery.TExpreso.full.min.js
+		jquery-1.9.1.min.js
 </pre></div>
 
-<p>
-Note que los bloques comienzan siempre con <code> {{# }} </code> y concluyen con <code> {{ end }} </code>. 
-</p>
+<p><small>Note que se incluye la <a href="http://jquery.com/download/" target="_blanck">Librería JavaScript JQuery</a></small> en la versión estable 
+con la cual se testeó el plugin <strong>jquery.TExpreso</strong>, aunque funciona también a partir de la versión <strong>jQuery 1.5</strong>.</p>
 
-<br/>
-<h3> Bloques iterativos: </h3>
+<p>Dé un vistazo al arhivo de ejemplo <strong><em>"proto.html"</em></strong> y notará la simplicidad del uso de <strong>jquery.TExpreso</strong>.</p>
 
-<p>
-Un <strong>bloque iterativo</strong> es un bloque contenedor que itera sobre el <strong>Array</strong> indicado en su expresión y que renderizará el código subyacente
-tantas veces como items contenga ese array. Veamos este ejemplo:
-</p>
-
-<div class="highlight highlight-html"><pre class="htmlStyle">
-{{# persons }}
-	&lt;p&gt;{{firstName}} {{lastName}} vive en {{address.city}} &lt;/p&gt; 
-{{ else }}  
-	&lt;p&gt;no hay personas en la lista!&lt;/p&gt; 
-{{ end }}  
-</pre></div>
-<p>
-Note que en caso que el array no contega items, será el contenido subyacente a <code> {{ else }} </code> el renderizado ...
-<br/>
-
-<p><em>si lo renderizamos con el siguiente contexto de datos:</em></p>
-
-<div class="highlight highlight-html"><pre class="jsStyle">var myContext = {
-  persons: [
-    { firstName: 'Juan', lastName: 'Fulano', address: { city: 'Polvorines', province: 'BA' }  },
-    { firstName: 'Ana', lastName: 'Sultano', address: { city: 'Sourdeaux', province: 'BA' }  },
-  ]
-};</pre>
-</div>
-
-<p><em>... el resultado HTML será:</em><br/></p>
-
-<div class="highlight highlight-html"><pre class="htmlStyle2">
-&lt;p&gt;Juan Fulano vive en Polvorines&lt;/p&gt; 
-&lt;p&gt;Ana Sultano vive en Sourdeaux&lt;/p&gt;
-</pre>
-</div>
-
-<p><em>en cambio, si lo renderizamos con el siguiente contexto de datos:</em></p>
-
-<div class="highlight highlight-html"><pre class="jsStyle">var myContext = { persons: [] };</pre></div>
-
-<p><em>... debido a que el array <strong>persons</strong> está vacío (o nulo/indefinido) se encaminará al <code> {{ else }} </code> :</em><br/></p>
-
-<div class="highlight highlight-html"><pre class="htmlStyle2">&lt;p&gt;no hay personas en la lista!&lt;/p&gt;</pre></div>
-
-
-
-
-
-
-
-<p><em>Si a este template algo más complejo:</em><br/></p>
-
-<div class="highlight highlight-html"><pre class="htmlStyle">
-&lt;div&gt;
-	{{# if persons.length &gt; 0}}
-		&lt;ul&gt;
-		{{# persons }}
-	    	&lt;li&gt; &lt;b&gt;{{firstName}} {{lastName}}&lt;/b&gt; vive en {{address.city}} &lt;/li&gt; 
-		{{ end }}  
-	    &lt;/ul&gt;
-		&lt;p&gt;Hay {{persons.length}} personas&lt;/p&gt;
-	{{ else }}
-		&lt;p&gt;No hay personas en la lista!&lt;/p&gt;
-	{{ end }}  
-&lt;/div&gt;</pre>
-</div>
-
-<p><em>lo renderizamos con el siguiente contexto de datos:</em></p>
-
-<div class="highlight highlight-html"><pre class="jsStyle">var myContext = {
-  persons: [
-    { firstName: 'Juan', lastName: 'Fulano', address: { city: 'Polvorines', province: 'BA' }  },
-    { firstName: 'Ana', lastName: 'Sultano', address: { city: 'Sourdeaux', province: 'BA' }  },
-  ]
-};</pre>
-</div>
-
-<p><em>... el resultado HTML será:</em><br/></p>
-
-<div class="highlight highlight-html"><pre class="htmlStyle2">
-&lt;div&gt;
-  &lt;ul&gt;
-      &lt;li&gt; &lt;b&gt;Juan Fulano&lt;/b&gt; vive en Polvorines &lt;/li&gt; 
-      &lt;li&gt; &lt;b&gt;Ana Sultano&lt;/b&gt; vive en Sourdeaux &lt;/li&gt; 
-  &lt;/ul&gt;
-  &lt;p&gt;Hay 2 personas&lt;/p&gt;
-&lt;/div&gt;</pre>
-</div>
-
-	
-<p><em>Pero... si lo renderizamos con este otro contexto de datos:</em></p>
+<p>En muchos casos el código <em>Javascript</em> será similar a este:</p>
 
 <div class="highlight highlight-html"><pre class="jsStyle">
-var myContext = { persons: [] };  // "persons" no contiene elementos </pre>
-</div>
+...
+ 
+// obtener los templates que haya en el DOM y desde URL
+ 
+$.TExpreso.addFromDom();
+$.TExpreso.addFromUrl("others/myTemplates.html");
 
+...
+ 
+// ante algun evento efectuar alguna petición ajax  
+// asincronicamente, y al recibirla refrescar DOM
+ 
+$.getJSON(miPeticion, dataToSend).done( function(data) {  
+	$('#vista').texpreso( 'template-1', data );   // refrescar !! 
+}); 
+ 
+...
+</pre></div>
+<br/>
+<p>Puede observar un ejemplo real (similar a este) de busqueda de imágenes en <strong>Flickr</strong>, en el arhivo <strong><em>"proto_flickr.html"</em></strong>.</p>
 
-<p><em>... el resultado será entonces:</em><br/></p>
-
-<div class="highlight highlight-html"><pre class="htmlStyle2">
-&lt;div&gt;
-	&lt;p&gt;No hay personas!&lt;/p&gt;
-&lt;/div&gt;</pre>
-</div>
-
-
+<div class="ant-sig"></div> 
+	
 </section>
 </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">TExpreso maintained by <a href="https://github.com/jcolombo1">jcolombo1</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer"> </div>
 
     
- 	<script type="text/javascript" src="javascripts/jquery-1.11.1.min.js"></script>
-	<script type="text/javascript" src="javascripts/jquery.snippet.js"></script>
-	<script type="text/javascript" src="javascripts/TExpreso.min.js"></script>
-	<script type="text/javascript" src="javascripts/jquery.TExpreso.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery.snippet.js"></script>
+<script type="text/javascript" src="javascripts/TExpreso.min.js"></script>
+<script type="text/javascript" src="javascripts/jquery.TExpreso.min.js"></script>
 
 
-
-<script type="text/html" id="tpl1">
-<pre class="res">&lt;p&gt; {{saludo}} {{nombre}}! &lt;/p&gt;</pre>
-</script>
-
-  
 <script type="text/javascript">
 $(document).ready( function() {
-	var data = { saludo: "Muy buenos días" };
-	$("#boton").click( function(){ 
-		data.nombre = document.getElementById("nombre").value ;
-		$.TExpreso.addFromDom();
-		$('#resultado').texpreso('tpl1',data);
-		$('#resultado pre').snippet("html",{style:"neon"});
-		return false;
+	
+	$.TExpreso.addFromDom();
+	$.TExpreso.addFromUrl('templates.html', function(){ 
+		$('#footer_wrap').texpreso('footer'); // FOOTER C/ COPYRIGHT Y MENU
+		$('div.menu').texpreso('menu'); // MENU SUPERIOR E INFERIOR
+		$('div.ant-sig').texpreso('ant-sig',{class_:'menu', siguiente:{ hreff:'blocks0', text:'Siguiente >>' }}); // MENU ANTERIOR - SIGUIENTE 
 	});
-
+	
 	$("pre.htmlStyle").snippet("html",{style:"typical"});
 	$("pre.htmlStyleNN").snippet("html",{style:"typical",menu:false,showNum:false});
 	$("pre.htmlStyle2").snippet("html",{style:"neon"});
 	$("pre.jsStyle").snippet("javascript_dom",{style:"berries-light"});
 	$("pre.javaStyle").snippet("java",{style:"typical"});
-	$("#boton").click();
+	
 });
 </script>
 </body>

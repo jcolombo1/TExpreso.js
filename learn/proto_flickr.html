@@ -1,0 +1,56 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>TExpreso - Pruebas</title>
+
+		<!---------------- JAVASCRIPTS REQUERIDOS ----------------->
+		
+		<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="js/jquery.TExpreso.full.min.js"></script>
+
+	</head>
+<body>
+
+	<h2>TExpreso - Prueba 2 ( Flickr )</h2>
+	<form> <label for="buscar">Buscar por : </label> 
+		<input type="text" id="buscar" name="buscar" value="patagonia argentina"/> <button type="submit" id="boton">Buscar!</button>
+	</form>
+	<br/>
+	<div id="vista"> </div> 
+			
+	<!---------------- SE DEFINE UN TEMPLATE EN DOM ----------------->
+	
+	<script type="text/html" id="template-1" >
+		{{#items}}
+			<img src="{{media.m}}" />
+		{{else}}
+			<h4>no hay resultados...</h4>
+		{{end}}
+	</script>
+
+	<!-------------------- javascripts ----------------------->
+	<script type="text/javascript">
+	
+		// compila TODOS los templates que haya en el DOM (en este caso hay sólo uno)
+		$.TExpreso.addFromDom();
+
+		var flickrAPI = "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?";
+
+		// efectuar Ajax de petición a Flickr
+		$("#boton").click( function(){ 
+			$.getJSON( flickrAPI, { 
+				tags: document.getElementById("buscar").value, tagmode: "any", format: "json"} )
+			.done(function( data ) {  
+				$('#vista').texpreso( 'template-1', data ); 
+			});
+			return false;
+		});
+
+		$(document).ready( function() { 
+			$("#boton").click();
+		});
+	</script>
+	
+</body>
+</html>

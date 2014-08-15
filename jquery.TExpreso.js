@@ -62,6 +62,11 @@
 	* Los archivos pueden contener uno o más templates de la forma <script type="text/html" id="miTemplate">...</script>
 	* Si el <script> indica attr: data-te-name='xxxxx' se tomará su valor como nombre del template/helper.
 	* Si el <script> indica attr: data-te-type='helper' se tomará su contenido como helper (debe ser function anonima).
+	*
+	* La función callback "doit" si está suministrada devuelve 2 params ( cant, url ), donde "cant" indica la cantidad de templates 
+	* encontrados en el archivo, y la "url" la misma url que fue suministrada.
+	*
+	* "overwrite" indicará si debe sobreescribir templates que ya estuvieran cargados o no (default: false).
 	*/
 	function addFromUrl(url, doit, overwrite) {
 		if (!url || ( !overwrite && hasUrl(url))) { // antes ver si ya fue cargado el url
@@ -145,13 +150,13 @@
 	 * JQuery Plugin: Renderizar template c/ data model suministrado en los elementos subyacentes.
 	 *
 	 * @param tpl			nombre del template a renderizar (debe estar previamente registrado)
-	 * @param data			scope con data model
+	 * @param data			scope con data model (default: {})
 	 * @param retainMem		object de contenido de variables de template. O, true (boolean) si desea retener estado previo de las variables (default: false).
 	*/
 	$.fn.texpreso = function (tpl, data, retainMem) {
 		var inst = getTExpreso();
 		return this.each( function () {
-			$(this).html( inst.render( tpl, data, retainMem ) ); 
+			$(this).html( inst.render( tpl, data || {}, retainMem ) ); 
 		});
 	};
 	$.fn.TExpreso = $.fn.texpreso;  // sinonimos
